@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoChip, IsoGround, IsoPlot, IsoScene, ZoomableMap } from "@/components/oee/iso";
 import {
   Donut,
   EmptyState,
@@ -62,16 +62,17 @@ function PlantView() {
         back={{ label: "Multi Plant", to: "/live" }}
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
-          <div className="flex items-center gap-4 pr-4">
-            <Donut value={plant.oee} size={92} label="Plant OEE" />
+        <div className="grid min-h-28 overflow-hidden rounded-lg border border-border bg-surface xl:grid-cols-[1.7fr_0.8fr]">
+          <div className="flex min-w-0 flex-wrap items-stretch">
+          <div className="flex items-center gap-4 border-r border-border px-4 py-3">
+            <Donut value={plant.id === "J2" ? 76.9 : plant.oee} size={88} label={`${plant.id} OEE`} />
             <div className="grid w-44 gap-1.5">
               <MetricBar label="Availability" value={plant.availability} />
               <MetricBar label="Performance" value={plant.performance} />
               <MetricBar label="Quality" value={plant.quality} />
             </div>
           </div>
-          <div className="grid flex-1 gap-3 sm:grid-cols-3">
+          <div className="grid min-w-[520px] flex-1 sm:grid-cols-3">
             {plant.zones.map((z) => (
               <button
                 key={z.id}
@@ -82,7 +83,7 @@ function PlantView() {
                     params: { plantId: plant.id, zoneId: z.id },
                   })
                 }
-                className="flex items-center gap-3 rounded-lg border border-border p-2.5 text-left transition-colors hover:border-primary"
+                className="flex items-center gap-3 border-r border-border px-3 py-2.5 text-left transition-colors last:border-r-0 hover:bg-muted/50"
               >
                 <Donut value={z.oee} size={58} label={z.id} />
                 <div className="min-w-0 flex-1 space-y-1">
@@ -94,31 +95,41 @@ function PlantView() {
               </button>
             ))}
           </div>
+          </div>
+          <div className="min-w-0 border-t border-border xl:border-l xl:border-t-0">
+            <div className="flex items-center justify-between px-3 py-2">
+              <h2 className="text-xs font-semibold">Alarms</h2>
+              <span className="text-[9px] text-muted-foreground">{occurring} occurring · {alarms.length - occurring} resolved</span>
+            </div>
+            <div className="max-h-24 overflow-auto">
+              <table className="w-full text-[9px]">
+                <thead className="text-left uppercase text-muted-foreground"><tr><th className="px-3 py-1">Line</th><th>Issue</th><th>Start</th><th>Duration</th><th>Status</th></tr></thead>
+                <tbody>{alarms.slice(0, 4).map((a) => <tr key={a.id} className="border-t border-border/60"><td className="px-3 py-1 font-mono text-tier-bad">{a.lineId}</td><td className="max-w-24 truncate">{a.issue}</td><td>{a.start}</td><td className="font-mono">{a.durationMinutes}m</td><td className={a.status === "OCCURRING" ? "text-tier-bad" : "text-muted-foreground"}>{a.status}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-[1.6fr_1fr]">
-          <Panel
-            title="Zone map"
-            subtitle="Click a zone to open Zone View"
-            action={<StatusLegend />}
-            bodyClassName="relative p-0"
-          >
+        <Panel className="flex-1" action={<StatusLegend />} bodyClassName="relative p-0">
             <Compass />
             <ZoomableMap className="min-h-[380px] flex-1">
-              <IsoScene viewBox="-185 -105 365 305">
-                <IsoGround cols={6} rows={6} s={34} />
+              <IsoScene viewBox="-300 -135 600 390">
+                <IsoGround cols={10.5} rows={8.5} s={34} />
+                <IsoPlot x={0.35} y={0.35} w={9.8} d={7.8} s={34} fill="var(--map-plot)" />
                 {plant.zones.map((z, zi) =>
                   z.lines.slice(0, 12).map((l, li) => {
-                    const x = 0.4 + zi * 1.9;
-                    const y = 0.3 + li * 0.45;
+                    const origins = [{ x: 0.8, y: 0.8 }, { x: 5.6, y: 0.8 }, { x: 3.1, y: 4.65 }];
+                    const origin = origins[zi] ?? origins[0];
+                    const x = origin.x + (li % 6) * 0.5;
+                    const y = origin.y + Math.floor(li / 6) * 0.72;
                     return (
                       <IsoBlock
                         key={`${z.id}-${l.id}`}
                         x={x}
                         y={y}
-                        w={1.5}
-                        d={0.32}
-                        h={12 + l.oee * 0.4}
+                        w={2.25}
+                        d={0.28}
+                        h={10}
                         s={34}
                         color={STATUS_HEX[l.status]}
                         onClick={() =>
@@ -131,71 +142,25 @@ function PlantView() {
                     );
                   }),
                 )}
-                {plant.zones.map((z, zi) => (
+                {plant.zones.map((z, zi) => {
+                  const labels = [{ x: 2.35, y: 0.9 }, { x: 7.15, y: 0.9 }, { x: 4.65, y: 4.7 }];
+                  const label = labels[zi] ?? labels[0];
+                  return (
                   <IsoChip
                     key={z.id}
-                    x={1.15 + zi * 1.9}
-                    y={0.2}
+                    x={label.x}
+                    y={label.y}
                     s={34}
-                    h={70}
+                    h={40}
                     label={z.name}
                     value={`${z.oee.toFixed(0)}%`}
                     color={TIER_HEX[tierOf(z.oee)]}
+                    onClick={() => navigate({ to: "/live/$plantId/$zoneId", params: { plantId: plant.id, zoneId: z.id } })}
                   />
-                ))}
+                )})}
               </IsoScene>
             </ZoomableMap>
-          </Panel>
-
-          <Panel
-            title="Alarms"
-            subtitle={`${occurring} occurring · ${alarms.length - occurring} resolved this shift`}
-            bodyClassName="p-0"
-          >
-            <div className="h-full min-h-[380px] overflow-auto">
-              <table className="w-full text-[11px]">
-                <thead className="sticky top-0 bg-surface text-left text-muted-foreground">
-                  <tr className="border-b border-border">
-                    <th className="px-3 py-2 font-medium">Line</th>
-                    <th className="px-3 py-2 font-medium">Issue</th>
-                    <th className="px-3 py-2 font-medium">Start</th>
-                    <th className="px-3 py-2 font-medium">Duration</th>
-                    <th className="px-3 py-2 font-medium">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {alarms.map((a) => (
-                    <tr key={a.id} className="border-b border-border/60">
-                      <td className="px-3 py-2 font-mono">{a.lineId}</td>
-                      <td className="px-3 py-2">{a.issue}</td>
-                      <td className="px-3 py-2 font-mono">{a.start}</td>
-                      <td className="px-3 py-2 font-mono">{a.durationMinutes} min</td>
-                      <td className="px-3 py-2">
-                        <span
-                          className={cn(
-                            "rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase",
-                            a.status === "OCCURRING"
-                              ? "bg-tier-bad/15 text-tier-bad"
-                              : "bg-grid text-muted-foreground",
-                          )}
-                        >
-                          {a.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  {alarms.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="p-4 text-center text-muted-foreground">
-                        No alarms this shift
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </Panel>
-        </div>
+        </Panel>
       </main>
     </div>
   );
