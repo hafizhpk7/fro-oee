@@ -1,0 +1,65 @@
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+
+import { DEFAULT_PLANT_ID } from "./data";
+import { snapResolution, type ResolutionId, type SpanId } from "./filters";
+
+export type Role = "shift-leader" | "section-head";
+
+export type Filters = {
+  span: SpanId;
+  resolution: ResolutionId;
+  /** Section Head only (single select) */
+  plantId: string;
+  zoneIds: string[];
+  lineIds: string[];
+  sku: string | "all";
+};
+
+type Ctx = {
+  role: Role;
+  setRole: (r: Role) => void;
+  filters: Filters;
+  /** Applies the cascading rules from §5 automatically. */
+  setFilters: (patch: Partial<Filters>) => void;
+};
+
+const AppContext = createContext<Ctx | null>(null);
+
+export function AppProvider({ children }: { children: ReactNode }) {
+  const [role, setRole] = useState<Role>("shift-leader");
+  const [filters, setFiltersState] = useState<Filters>({
+    span: "this-week",
+    resolution: "1d",
+    plantId: DEFAULT_PLANT_ID,
+    zoneIds: ["A"],
+    lineIds: [],
+    sku: "all",
+  });
+
+  const setFilters = useCallback((patch: Partial<Filters>) => {
+    setFiltersState((prev) => {
+      const next: Filters = { ...prev, ...patch };
+      // Plant resets Zone & Line, but never Span/Resolution/SKU.
+      if (patch.plantId && patch.plantId !== prev.plantId) {
+        next.zoneIds = [];
+        next.lineIds = [];
+      }
+      // Zone limits the available Lines -> drop lines that no longer apply.
+      if (patch.zoneIds && patch.zoneIds !== prev.zoneIds) {
+        next.lineIds = [];
+      }
+      // Span change may invalidate resolution -> auto snap to nearest coarser.
+      next.resolution = snapResolution(next.span, next.resolution);
+      return next;
+    });
+  }, []);
+
+  const value = useMemo(() => ({ role, setRole, filters, setFilters }), [role, filters, setFilters]);
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+export function useApp(): Ctx {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useApp must be used inside AppProvider");
+  return ctx;
+}
