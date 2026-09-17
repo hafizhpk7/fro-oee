@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type Context, type ReactNode } from "react";
 
 import { DEFAULT_PLANT_ID } from "./data";
 import { snapResolution, type ResolutionId, type SpanId } from "./filters";
