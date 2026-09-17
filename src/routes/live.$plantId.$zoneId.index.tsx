@@ -38,7 +38,12 @@ export const Route = createFileRoute("/live/$plantId/$zoneId/")({
 const S = 40;
 const GAP_X = 1.7;
 const GAP_Y = 1.8;
-const REFERENCE_LINE_LABELS = ["PCP02 Kemas", "BLP33 Kemas", "BLP11 Kemas", "TUP13 Kemas"] as const;
+const FEATURED_LINES: Record<number, string> = {
+  0: "PCP02 Kemas",
+  4: "BLP33 Kemas",
+  8: "BLP11 Kemas",
+  12: "TUP13 Kemas",
+};
 
 function ZoneView() {
   const { plantId, zoneId } = useParams({ from: "/live/$plantId/$zoneId/" });
@@ -155,22 +160,24 @@ function ZoneView() {
                         y={by + Math.floor(mi / 2) * 0.72}
                         s={S}
                         statusColor={STATUS_HEX[m.status]}
-                        onClick={() => setSelected(l)}
+                        onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
                       />
                     ))}
-                    <IsoMetricCard
-                      x={bx + 0.6}
-                      y={by + 0.3}
-                      s={S}
-                      h={isSel ? 74 : 64}
-                      title={REFERENCE_LINE_LABELS[i] ?? `${l.id} Kemas`}
-                      value={l.oee}
-                      availability={l.availability}
-                      performance={l.performance}
-                      quality={l.quality}
-                      color={STATUS_HEX[l.status]}
-                      onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
-                    />
+                    {FEATURED_LINES[i] && (
+                      <IsoMetricCard
+                        x={bx + 0.6}
+                        y={by + 0.3}
+                        s={S}
+                        h={isSel ? 74 : 64}
+                        title={FEATURED_LINES[i]}
+                        value={l.oee}
+                        availability={l.availability}
+                        performance={l.performance}
+                        quality={l.quality}
+                        color={STATUS_HEX[l.status]}
+                        onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
+                      />
+                    )}
                   </g>
                 );
               })}
