@@ -13,7 +13,17 @@ import {
 import { STATUS_HEX, TIER_HEX, tierOf } from "@/lib/oee/config";
 import { getPlant, plantAlarms } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
-import { cn } from "@/lib/utils";
+
+const ZONE_ORIGINS = [
+  { x: 0.8, y: 0.8 },
+  { x: 5.6, y: 0.8 },
+  { x: 3.1, y: 4.65 },
+] as const;
+const ZONE_LABELS = [
+  { x: 2.35, y: 0.9 },
+  { x: 7.15, y: 0.9 },
+  { x: 4.65, y: 4.7 },
+] as const;
 
 export const Route = createFileRoute("/live/$plantId/")({
   head: () => ({
@@ -118,8 +128,7 @@ function PlantView() {
                 <IsoPlot x={0.35} y={0.35} w={9.8} d={7.8} s={34} fill="var(--map-plot)" />
                 {plant.zones.map((z, zi) =>
                   z.lines.slice(0, 12).map((l, li) => {
-                    const origins = [{ x: 0.8, y: 0.8 }, { x: 5.6, y: 0.8 }, { x: 3.1, y: 4.65 }];
-                    const origin = origins[zi] ?? origins[0];
+                    const origin = ZONE_ORIGINS[zi] ?? ZONE_ORIGINS[0];
                     const x = origin.x + (li % 6) * 0.5;
                     const y = origin.y + Math.floor(li / 6) * 0.72;
                     return (
@@ -143,8 +152,7 @@ function PlantView() {
                   }),
                 )}
                 {plant.zones.map((z, zi) => {
-                  const labels = [{ x: 2.35, y: 0.9 }, { x: 7.15, y: 0.9 }, { x: 4.65, y: 4.7 }];
-                  const label = labels[zi] ?? labels[0];
+                  const label = ZONE_LABELS[zi] ?? ZONE_LABELS[0];
                   return (
                   <IsoChip
                     key={z.id}

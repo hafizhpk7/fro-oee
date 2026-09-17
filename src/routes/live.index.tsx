@@ -7,6 +7,12 @@ import { TIER_HEX, tierOf } from "@/lib/oee/config";
 import { GROUP, PLANTS } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
 
+const PLANT_POSITIONS = [
+  { x: 2.1, y: 7.2, w: 2.1, d: 1.6, h: 55 },
+  { x: 6.8, y: 1.1, w: 2.9, d: 2.1, h: 74 },
+  { x: 6.7, y: 6.9, w: 2.4, d: 1.8, h: 58 },
+] as const;
+
 export const Route = createFileRoute("/live/")({
   head: () => ({
     meta: [
@@ -84,8 +90,7 @@ function MultiPlantView() {
               {[1.1, 1.8, 2.6, 3.4, 4.2].map((x) => [1.3, 2.3, 3.5].map((y) => <IsoTree key={`${x}-${y}`} x={x} y={y} s={34} />))}
               {PLANTS.map((p, i) => {
                 const tier = tierOf(p.oee);
-                const positions = [{ x: 2.1, y: 7.2, w: 2.1, d: 1.6, h: 55 }, { x: 6.8, y: 1.1, w: 2.9, d: 2.1, h: 74 }, { x: 6.7, y: 6.9, w: 2.4, d: 1.8, h: 58 }];
-                const pos = positions[i] ?? positions[0];
+                const pos = PLANT_POSITIONS[i] ?? PLANT_POSITIONS[0];
                 const value = [77, 77.3, 82.6][i] ?? p.oee;
                 return (
                   <g key={p.id}>
