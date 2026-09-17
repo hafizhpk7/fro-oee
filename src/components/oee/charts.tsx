@@ -213,7 +213,7 @@ export function ParetoChart({
             dataKey="value"
             radius={[3, 3, 0, 0]}
             onClick={(d: { id?: string }) => d.id && onSelect?.(d.id)}
-            className={onSelect ? "cursor-pointer" : undefined}
+            className={onSelect ? "cursor-pointer" : ""}
           >
             {rows.map((d) => (
               <Cell
