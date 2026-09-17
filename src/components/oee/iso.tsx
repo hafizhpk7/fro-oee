@@ -6,6 +6,7 @@
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const MIN_ZOOM = 0.7;
@@ -138,36 +139,39 @@ export function ZoomableMap({ children, className }: { children: ReactNode; clas
         {children}
       </div>
       <div className="absolute bottom-3 right-3 z-10 flex flex-col overflow-hidden rounded-md border border-border bg-surface shadow-md">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           aria-label="Zoom in"
           title="Zoom in"
-          className="grid size-9 place-items-center text-foreground transition-colors hover:bg-muted"
+          className="rounded-none text-foreground"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => zoomFromCenter(1.2)}
         >
           <Plus className="size-4" />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           aria-label="Reset map view"
           title="Reset map view"
-          className="grid size-9 place-items-center border-y border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="rounded-none border-y border-border text-muted-foreground hover:text-foreground"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => commit({ scale: 1, x: 0, y: 0 })}
         >
           <RotateCcw className="size-3.5" />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           aria-label="Zoom out"
           title="Zoom out"
-          className="grid size-9 place-items-center text-foreground transition-colors hover:bg-muted"
+          className="rounded-none text-foreground"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => zoomFromCenter(1 / 1.2)}
         >
           <Minus className="size-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -185,6 +189,7 @@ export function IsoBlock({
   h = 14,
   s = 26,
   color,
+  stroke,
   onClick,
   dim,
 }: {
@@ -195,6 +200,7 @@ export function IsoBlock({
   h?: number;
   s?: number;
   color: string;
+  stroke?: string;
   onClick?: () => void;
   dim?: boolean;
 }) {
@@ -212,9 +218,9 @@ export function IsoBlock({
       className={onClick ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}
       opacity={dim ? 0.5 : 1}
     >
-      <polygon points={pts([t1, t2, t3, t4])} fill={color} />
-      <polygon points={pts([t4, t3, b3, b4])} fill={color} style={{ filter: "brightness(0.78)" }} />
-      <polygon points={pts([t2, t3, b3, b2])} fill={color} style={{ filter: "brightness(0.6)" }} />
+      <polygon points={pts([t1, t2, t3, t4])} fill={color} stroke={stroke} strokeWidth={stroke ? 1.2 : 0} />
+      <polygon points={pts([t4, t3, b3, b4])} fill={color} stroke={stroke} strokeWidth={stroke ? 1.2 : 0} style={{ filter: "brightness(0.78)" }} />
+      <polygon points={pts([t2, t3, b3, b2])} fill={color} stroke={stroke} strokeWidth={stroke ? 1.2 : 0} style={{ filter: "brightness(0.6)" }} />
     </g>
   );
 }
@@ -257,6 +263,76 @@ export function IsoGround({
   );
 }
 
+export function IsoPlot({
+  x,
+  y,
+  w,
+  d,
+  s = 26,
+  fill = "var(--map-plot)",
+  stroke = "var(--map-line)",
+}: {
+  x: number;
+  y: number;
+  w: number;
+  d: number;
+  s?: number;
+  fill?: string;
+  stroke?: string;
+}) {
+  const points = [iso(x, y, 0, s), iso(x + w, y, 0, s), iso(x + w, y + d, 0, s), iso(x, y + d, 0, s)];
+  return <polygon points={points.map((p) => `${p.x},${p.y}`).join(" ")} fill={fill} stroke={stroke} strokeWidth={0.8} />;
+}
+
+export function IsoRoad({ x, y, w, d, s = 26 }: { x: number; y: number; w: number; d: number; s?: number }) {
+  const a = iso(x, y, 1, s);
+  const b = iso(x + w, y, 1, s);
+  const c = iso(x + w, y + d, 1, s);
+  const e = iso(x, y + d, 1, s);
+  const mid1 = iso(x + w / 2, y, 2, s);
+  const mid2 = iso(x + w / 2, y + d, 2, s);
+  return (
+    <g>
+      <polygon points={[a, b, c, e].map((p) => `${p.x},${p.y}`).join(" ")} fill="var(--map-road)" />
+      <line x1={mid1.x} y1={mid1.y} x2={mid2.x} y2={mid2.y} stroke="var(--map-road-mark)" strokeWidth={1} strokeDasharray="5 4" />
+    </g>
+  );
+}
+
+export function IsoTree({ x, y, s = 26 }: { x: number; y: number; s?: number }) {
+  const base = iso(x, y, 0, s);
+  return (
+    <g pointerEvents="none">
+      <line x1={base.x} y1={base.y} x2={base.x} y2={base.y - 9} stroke="var(--map-tree-trunk)" strokeWidth={1.5} />
+      <circle cx={base.x} cy={base.y - 12} r={4.5} fill="var(--map-green)" />
+    </g>
+  );
+}
+
+export function IsoMachine({
+  x,
+  y,
+  s = 26,
+  statusColor,
+  onClick,
+}: {
+  x: number;
+  y: number;
+  s?: number;
+  statusColor: string;
+  onClick?: () => void;
+}) {
+  const top = iso(x + 0.42, y + 0.35, 24, s);
+  return (
+    <g onClick={onClick} className={onClick ? "cursor-pointer transition-opacity hover:opacity-80" : undefined}>
+      <IsoBlock x={x} y={y} w={0.85} d={0.72} h={11} s={s} color="var(--machine-base)" />
+      <IsoBlock x={x + 0.13} y={y + 0.11} w={0.58} d={0.48} h={20} s={s} color="var(--machine-frame)" stroke="var(--machine-line)" />
+      <line x1={top.x} y1={top.y + 2} x2={top.x} y2={top.y - 8} stroke="var(--machine-line)" strokeWidth={1} />
+      <circle cx={top.x} cy={top.y - 10} r={3.5} fill={statusColor} stroke="var(--surface)" strokeWidth={1.2} />
+    </g>
+  );
+}
+
 export function IsoChip({
   x,
   y,
@@ -265,6 +341,8 @@ export function IsoChip({
   label,
   value,
   color,
+  filled = false,
+  onClick,
 }: {
   x: number;
   y: number;
@@ -273,18 +351,27 @@ export function IsoChip({
   label: string;
   value?: string;
   color?: string;
+  filled?: boolean;
+  onClick?: () => void;
 }) {
   const p = iso(x, y, h, s);
   const text = value ? `${label} · ${value}` : label;
   const w = text.length * 5.6 + 12;
   return (
-    <g transform={`translate(${p.x - w / 2}, ${p.y - 14})`} pointerEvents="none">
-      <rect width={w} height={15} rx={7.5} fill="var(--surface)" stroke={color ?? "var(--border)"} />
+    <g
+      transform={`translate(${p.x - w / 2}, ${p.y - 14})`}
+      pointerEvents={onClick ? "auto" : "none"}
+      onClick={onClick}
+      className={onClick ? "cursor-pointer" : undefined}
+    >
+      <line x1={w / 2} y1={15} x2={w / 2} y2={24} stroke={color ?? "var(--border)"} strokeWidth={1} />
+      <circle cx={w / 2} cy={25} r={1.7} fill={color ?? "var(--border)"} />
+      <rect width={w} height={15} rx={4} fill={filled ? color : "var(--surface)"} stroke={color ?? "var(--border)"} />
       <text
         x={w / 2}
         y={10.5}
         textAnchor="middle"
-        className="fill-foreground font-mono"
+        className={cn("font-mono", filled ? "fill-primary-foreground" : "fill-foreground")}
         style={{ fontSize: 8.5 }}
       >
         {text}
@@ -295,10 +382,11 @@ export function IsoChip({
 
 export function Compass() {
   return (
-    <div className="pointer-events-none absolute right-3 top-3 flex flex-col items-center text-[9px] uppercase tracking-widest text-muted-foreground">
+    <div className="pointer-events-none absolute right-5 top-5 z-10 flex items-center gap-1 text-xs font-semibold text-muted-foreground">
       <span>N</span>
-      <svg width="18" height="18" viewBox="0 0 18 18">
-        <path d="M9 1 L12 12 L9 9.5 L6 12 Z" fill="currentColor" opacity="0.6" />
+      <svg width="52" height="52" viewBox="0 0 52 52" className="rounded-full border border-border bg-surface/80">
+        <line x1="14" y1="16" x2="38" y2="34" stroke="var(--muted-foreground)" strokeWidth="1.4" />
+        <path d="M11 13 L22 16 L16 21 Z" fill="var(--status-down)" />
       </svg>
     </div>
   );
