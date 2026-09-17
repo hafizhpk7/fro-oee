@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShiftPerformanceRouteImport } from './routes/shift-performance'
 import { Route as AnalyticsIndexRouteImport } from './routes/analytics.index'
 import { Route as AnalyticsLossTreeRouteImport } from './routes/analytics.loss-tree'
+import { Route as AnalyticsParetoRouteImport } from './routes/analytics.pareto'
 import { Route as LiveIndexRouteImport } from './routes/live.index'
 import { Route as LivePlantIdIndexRouteImport } from './routes/live.$plantId.index'
 import { Route as LivePlantIdZoneIdIndexRouteImport } from './routes/live.$plantId.$zoneId.index'
@@ -23,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShiftPerformanceRoute = ShiftPerformanceRouteImport.update({
+  id: '/shift-performance',
+  path: '/shift-performance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnalyticsIndexRoute = AnalyticsIndexRouteImport.update({
   id: '/analytics/',
   path: '/analytics/',
@@ -31,6 +38,11 @@ const AnalyticsIndexRoute = AnalyticsIndexRouteImport.update({
 const AnalyticsLossTreeRoute = AnalyticsLossTreeRouteImport.update({
   id: '/analytics/loss-tree',
   path: '/analytics/loss-tree',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsParetoRoute = AnalyticsParetoRouteImport.update({
+  id: '/analytics/pareto',
+  path: '/analytics/pareto',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LiveIndexRoute = LiveIndexRouteImport.update({
@@ -63,7 +75,9 @@ const LivePlantIdZoneIdLineIdMachineIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/shift-performance': typeof ShiftPerformanceRoute
   '/analytics/loss-tree': typeof AnalyticsLossTreeRoute
+  '/analytics/pareto': typeof AnalyticsParetoRoute
   '/analytics/': typeof AnalyticsIndexRoute
   '/live/': typeof LiveIndexRoute
   '/live/$plantId/': typeof LivePlantIdIndexRoute
@@ -73,7 +87,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/shift-performance': typeof ShiftPerformanceRoute
   '/analytics/loss-tree': typeof AnalyticsLossTreeRoute
+  '/analytics/pareto': typeof AnalyticsParetoRoute
   '/analytics': typeof AnalyticsIndexRoute
   '/live': typeof LiveIndexRoute
   '/live/$plantId': typeof LivePlantIdIndexRoute
@@ -84,7 +100,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/shift-performance': typeof ShiftPerformanceRoute
   '/analytics/loss-tree': typeof AnalyticsLossTreeRoute
+  '/analytics/pareto': typeof AnalyticsParetoRoute
   '/analytics/': typeof AnalyticsIndexRoute
   '/live/': typeof LiveIndexRoute
   '/live/$plantId/': typeof LivePlantIdIndexRoute
@@ -96,7 +114,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/shift-performance'
     | '/analytics/loss-tree'
+    | '/analytics/pareto'
     | '/analytics/'
     | '/live/'
     | '/live/$plantId/'
@@ -106,7 +126,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/shift-performance'
     | '/analytics/loss-tree'
+    | '/analytics/pareto'
     | '/analytics'
     | '/live'
     | '/live/$plantId'
@@ -116,7 +138,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/shift-performance'
     | '/analytics/loss-tree'
+    | '/analytics/pareto'
     | '/analytics/'
     | '/live/'
     | '/live/$plantId/'
@@ -127,7 +151,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ShiftPerformanceRoute: typeof ShiftPerformanceRoute
   AnalyticsLossTreeRoute: typeof AnalyticsLossTreeRoute
+  AnalyticsParetoRoute: typeof AnalyticsParetoRoute
   AnalyticsIndexRoute: typeof AnalyticsIndexRoute
   LiveIndexRoute: typeof LiveIndexRoute
   LivePlantIdIndexRoute: typeof LivePlantIdIndexRoute
@@ -145,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shift-performance': {
+      id: '/shift-performance'
+      path: '/shift-performance'
+      fullPath: '/shift-performance'
+      preLoaderRoute: typeof ShiftPerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analytics/': {
       id: '/analytics/'
       path: '/analytics'
@@ -157,6 +190,13 @@ declare module '@tanstack/react-router' {
       path: '/analytics/loss-tree'
       fullPath: '/analytics/loss-tree'
       preLoaderRoute: typeof AnalyticsLossTreeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics/pareto': {
+      id: '/analytics/pareto'
+      path: '/analytics/pareto'
+      fullPath: '/analytics/pareto'
+      preLoaderRoute: typeof AnalyticsParetoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/live/': {
@@ -199,7 +239,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ShiftPerformanceRoute: ShiftPerformanceRoute,
   AnalyticsLossTreeRoute: AnalyticsLossTreeRoute,
+  AnalyticsParetoRoute: AnalyticsParetoRoute,
   AnalyticsIndexRoute: AnalyticsIndexRoute,
   LiveIndexRoute: LiveIndexRoute,
   LivePlantIdIndexRoute: LivePlantIdIndexRoute,
