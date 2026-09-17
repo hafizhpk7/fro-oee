@@ -219,6 +219,5 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    min-width: 1024px;
   }
 }

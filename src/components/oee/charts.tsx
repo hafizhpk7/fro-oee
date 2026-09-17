@@ -338,10 +338,9 @@ export function LossTree({
 }) {
   const val = (n: LossNode) => (measure === "minutes" ? n.minutes : n.occurrences);
   const total = nodes.reduce((a, b) => a + val(b), 0) || 1;
-  const sorted = [...nodes].sort((a, b) => val(b) - val(a));
   return (
     <ul className="h-full divide-y divide-border/70">
-      {sorted.map((n) => (
+      {nodes.map((n) => (
         <LossTreeRow key={n.id} node={n} measure={measure} total={total} depth={0} rootLabel={n.label} onOpen={onOpen} />
       ))}
     </ul>
@@ -370,6 +369,7 @@ function LossTreeRow({
   const value = val(node);
   const pct = Math.round((value / total) * 1000) / 10;
   const hasChildren = !!node.children?.length;
+  const canExpand = hasChildren && (depth > 0 || rootLabel === "Breakdown" || rootLabel === "Minor Stop");
   const children = [...(node.children ?? [])].sort((a, b) => val(b) - val(a));
   const tones: Record<string, string> = {
     Breakdown: "var(--loss-breakdown)",
@@ -390,9 +390,9 @@ function LossTreeRow({
         <div className="flex min-w-0 items-center" style={{ paddingLeft: depth * 20 }}>
           <button
             type="button"
-            aria-label={hasChildren ? (open ? "Collapse" : "Expand") : "No children"}
-            onClick={() => hasChildren && setOpen((o) => !o)}
-            className={cn("mr-1 grid size-5 shrink-0 place-items-center text-loss-caret", !hasChildren && "invisible")}
+            aria-label={canExpand ? (open ? "Collapse" : "Expand") : "No children"}
+            onClick={() => canExpand && setOpen((o) => !o)}
+            className={cn("mr-1 grid size-5 shrink-0 place-items-center text-loss-caret", !canExpand && "invisible")}
           >
             {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
           </button>
@@ -415,7 +415,7 @@ function LossTreeRow({
           {Math.round(pct)}%
         </span>
       </div>
-      {open && hasChildren && (
+      {open && canExpand && (
         <ul>
           {children.map((c) => (
             <LossTreeRow

@@ -535,7 +535,7 @@ export function waterfall(scopeSeed: string) {
     ],
     losses: [
       { label: "Unscheduled", value: unscheduled, group: "Loading" },
-      { label: "Not Available", value: notAvailable, group: "Availability" },
+      { label: "Not Available", value: notAvailable, group: "Loading" },
       { label: "Planned Downtime", value: planned, group: "Loading" },
       { label: "Breakdown", value: breakdown, group: "Availability" },
       { label: "Idle, no order", value: idleNoOrder, group: "Availability" },
