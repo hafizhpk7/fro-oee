@@ -10,13 +10,23 @@ import { cn } from "@/lib/utils";
 
 const MIN_ZOOM = 0.7;
 const MAX_ZOOM = 3;
+const DRAG_THRESHOLD = 5;
 
 type ViewTransform = { scale: number; x: number; y: number };
+type DragState = {
+  pointerId: number;
+  x: number;
+  y: number;
+  originX: number;
+  originY: number;
+  moved: boolean;
+};
 
 export function ZoomableMap({ children, className }: { children: ReactNode; className?: string }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const transformRef = useRef<ViewTransform>({ scale: 1, x: 0, y: 0 });
-  const dragRef = useRef<{ pointerId: number; x: number; y: number; originX: number; originY: number } | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const draggedRef = useRef(false);
   const [transform, setTransform] = useState<ViewTransform>(transformRef.current);
   const [dragging, setDragging] = useState(false);
 
