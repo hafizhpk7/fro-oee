@@ -11,7 +11,7 @@ import {
   StatusLegend,
   StatusPill,
 } from "@/components/oee/ui";
-import { STATUS_HEX, TIER_HEX, tierOf } from "@/lib/oee/config";
+import { STATUS_HEX, tierOf } from "@/lib/oee/config";
 import { getZone, type Line } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
 import { useApp } from "@/lib/oee/app-context";
