@@ -59,6 +59,8 @@ export function ZoomableMap({ children, className }: { children: ReactNode; clas
     return () => viewport.removeEventListener("wheel", handleWheel);
   }, [zoomAt]);
 
+  // Pan only starts after the pointer moves past a small threshold, so simple
+  // clicks still reach the map's SVG nodes and trigger drill-down navigation.
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
     dragRef.current = {
@@ -67,26 +69,35 @@ export function ZoomableMap({ children, className }: { children: ReactNode; clas
       y: event.clientY,
       originX: transformRef.current.x,
       originY: transformRef.current.y,
+      moved: false,
     };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragging(true);
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
-    commit({
-      ...transformRef.current,
-      x: drag.originX + event.clientX - drag.x,
-      y: drag.originY + event.clientY - drag.y,
-    });
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.moved) {
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+      drag.moved = true;
+      setDragging(true);
+      if (viewportRef.current?.hasPointerCapture(event.pointerId) === false) {
+        viewportRef.current.setPointerCapture(event.pointerId);
+      }
+    }
+    commit({ ...transformRef.current, x: drag.originX + dx, y: drag.originY + dy });
   };
 
   const endDrag = (event: PointerEvent<HTMLDivElement>) => {
-    if (dragRef.current?.pointerId !== event.pointerId) return;
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    draggedRef.current = drag.moved;
     dragRef.current = null;
     setDragging(false);
-    event.currentTarget.releasePointerCapture(event.pointerId);
+    if (viewportRef.current?.hasPointerCapture(event.pointerId)) {
+      viewportRef.current.releasePointerCapture(event.pointerId);
+    }
   };
 
   return (
@@ -97,7 +108,16 @@ export function ZoomableMap({ children, className }: { children: ReactNode; clas
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
+      onClickCapture={(event) => {
+        // swallow the click that ends a real pan gesture, allow plain clicks
+        if (draggedRef.current) {
+          draggedRef.current = false;
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      }}
     >
+
       <div
         className={cn(
           "absolute inset-0 h-full w-full origin-top-left",
