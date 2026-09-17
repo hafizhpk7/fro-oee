@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type Context, type ReactNode } from "react";
 
 import { DEFAULT_PLANT_ID } from "./data";
 import { snapResolution, type ResolutionId, type SpanId } from "./filters";
@@ -27,7 +27,11 @@ type Ctx = {
   setFilters: (patch: Partial<Filters>) => void;
 };
 
-const AppContext = createContext<Ctx | null>(null);
+// Keep a single context instance across hot-module reloads. Without this, a
+// reloaded copy of this module creates a new context and consumers rendered by
+// the still-mounted provider read `null` and crash.
+const globalStore = globalThis as unknown as { __oeeAppContext?: Context<Ctx | null> };
+const AppContext = (globalStore.__oeeAppContext ??= createContext<Ctx | null>(null));
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>("shift-leader");
