@@ -45,7 +45,7 @@ export function allowedResolutions(span: SpanId): ResolutionId[] {
 export function snapResolution(span: SpanId, current: ResolutionId): ResolutionId {
   const allowed = allowedResolutions(span);
   if (allowed.includes(current)) return current;
-  return allowed[0];
+  return allowed[0] as ResolutionId;
 }
 
 export const PERIODS = [

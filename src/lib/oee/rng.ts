@@ -27,5 +27,6 @@ export function rand(seed: string, min: number, max: number, decimals = 0): numb
 }
 
 export function pick<T>(seed: string, items: readonly T[]): T {
-  return items[Math.floor(makeRng(seed)() * items.length) % items.length];
+  const idx = Math.floor(makeRng(seed)() * items.length) % items.length;
+  return items[idx] as T;
 }
