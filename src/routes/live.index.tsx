@@ -12,6 +12,11 @@ const PLANT_POSITIONS = [
   { x: 6.8, y: 1.1, w: 2.9, d: 2.1, h: 74 },
   { x: 6.7, y: 6.9, w: 2.4, d: 1.8, h: 58 },
 ] as const;
+const PLANT_SUMMARIES = [
+  { oee: 77, availability: 87.8, performance: 92.3, quality: 95 },
+  { oee: 77.3, availability: 88.2, performance: 91.8, quality: 95.5 },
+  { oee: 82.6, availability: 92.3, performance: 93.2, quality: 96.1 },
+] as const;
 
 export const Route = createFileRoute("/live/")({
   head: () => ({
@@ -54,20 +59,30 @@ function MultiPlantView() {
           </div>
           <div className="grid flex-1 sm:grid-cols-3">
             {PLANTS.map((p, index) => (
+              (() => {
+                const summary = PLANT_SUMMARIES[index] ?? {
+                  oee: p.oee,
+                  availability: p.availability,
+                  performance: p.performance,
+                  quality: p.quality,
+                };
+                return (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                 className="flex items-center gap-3 border-r border-border px-4 py-3 text-left transition-colors last:border-r-0 hover:bg-muted/50"
               >
-                <Donut value={[77, 77.3, 82.6][index] ?? p.oee} size={58} label={p.id} decimals={1} />
+                <Donut value={summary.oee} size={58} label={p.id} decimals={1} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="truncate text-xs font-semibold">{p.name}</p>
-                  <MetricBar label="A" value={p.availability} />
-                  <MetricBar label="P" value={p.performance} />
-                  <MetricBar label="Q" value={p.quality} />
+                  <MetricBar label="A" value={summary.availability} />
+                  <MetricBar label="P" value={summary.performance} />
+                  <MetricBar label="Q" value={summary.quality} />
                 </div>
               </button>
+                );
+              })()
             ))}
           </div>
         </div>
@@ -78,7 +93,7 @@ function MultiPlantView() {
         >
           <Compass />
           <ZoomableMap className="min-h-[420px] flex-1">
-            <IsoScene viewBox="-315 -5 630 340">
+            <IsoScene viewBox="-270 10 540 300">
               <IsoGround cols={11} rows={10} s={34} />
               <IsoPlot x={0.5} y={0.6} w={4.1} d={4.4} s={34} fill="var(--map-green)" />
               <IsoPlot x={6.2} y={0.5} w={4.1} d={3.1} s={34} />

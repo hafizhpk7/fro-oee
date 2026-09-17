@@ -24,6 +24,11 @@ const ZONE_LABELS = [
   { x: 7.15, y: 0.9 },
   { x: 4.65, y: 4.7 },
 ] as const;
+const REFERENCE_ZONE_SUMMARIES = [
+  { oee: 77, availability: 87.8, performance: 92.3, quality: 95 },
+  { oee: 77.3, availability: 88.2, performance: 91.8, quality: 95.5 },
+  { oee: 82.6, availability: 92.3, performance: 93.2, quality: 96.1 },
+] as const;
 
 export const Route = createFileRoute("/live/$plantId/")({
   head: () => ({
@@ -84,6 +89,9 @@ function PlantView() {
           </div>
           <div className="grid min-w-[520px] flex-1 sm:grid-cols-3">
             {plant.zones.map((z) => (
+              (() => {
+                const summary = REFERENCE_ZONE_SUMMARIES[plant.zones.indexOf(z)] ?? z;
+                return (
               <button
                 key={z.id}
                 type="button"
@@ -95,14 +103,16 @@ function PlantView() {
                 }
                 className="flex items-center gap-3 border-r border-border px-3 py-2.5 text-left transition-colors last:border-r-0 hover:bg-muted/50"
               >
-                <Donut value={z.oee} size={58} label={z.id} />
+                <Donut value={summary.oee} size={58} label={z.id} decimals={1} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="truncate text-xs font-semibold">{z.name}</p>
-                  <MetricBar label="A" value={z.availability} />
-                  <MetricBar label="P" value={z.performance} />
-                  <MetricBar label="Q" value={z.quality} />
+                  <MetricBar label="A" value={summary.availability} />
+                  <MetricBar label="P" value={summary.performance} />
+                  <MetricBar label="Q" value={summary.quality} />
                 </div>
               </button>
+                );
+              })()
             ))}
           </div>
           </div>
@@ -123,7 +133,7 @@ function PlantView() {
         <Panel className="flex-1" action={<StatusLegend />} bodyClassName="relative p-0">
             <Compass />
             <ZoomableMap className="min-h-[380px] flex-1">
-              <IsoScene viewBox="-300 5 600 315">
+              <IsoScene viewBox="-260 15 520 280">
                 <IsoGround cols={10.5} rows={8.5} s={34} />
                 <IsoPlot x={0.35} y={0.35} w={9.8} d={7.8} s={34} fill="var(--map-plot)" />
                 {plant.zones.map((z, zi) =>

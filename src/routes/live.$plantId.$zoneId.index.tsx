@@ -130,7 +130,7 @@ function ZoneView() {
         >
           <Compass />
           <ZoomableMap className="min-h-[440px] flex-1">
-            <IsoScene viewBox="-285 5 570 310">
+            <IsoScene viewBox="-255 10 510 280">
               <IsoGround cols={cols * GAP_X + 0.5} rows={rows * GAP_Y + 0.5} s={S} />
               <IsoPlot x={0.2} y={0.2} w={cols * GAP_X} d={rows * GAP_Y} s={S} fill="var(--map-plot)" />
               {zone.lines.map((l, i) => {
