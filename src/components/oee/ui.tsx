@@ -1,10 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, Moon, Sun } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { type ReactNode } from "react";
 
 import { STATUS_DOT, STATUS_LABEL, TIER_HEX, TIER_TEXT, tierOf, type Status } from "@/lib/oee/config";
 import { PERIODS, type PeriodId } from "@/lib/oee/filters";
-import { useApp } from "@/lib/oee/app-context";
 import { cn } from "@/lib/utils";
 
 export function Panel({
@@ -208,51 +207,6 @@ export function PeriodDropdown({
   );
 }
 
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-  return (
-    <button
-      type="button"
-      aria-label="Toggle theme"
-      onClick={() => setDark((d) => !d)}
-      className="rounded-md border border-border bg-surface p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-    >
-      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-    </button>
-  );
-}
-
-function RoleSwitcher() {
-  const { role, setRole } = useApp();
-  return (
-    <div className="flex items-center rounded-md border border-border bg-surface p-0.5 text-[11px]">
-      {(
-        [
-          ["shift-leader", "Shift Leader"],
-          ["section-head", "Section Head"],
-        ] as const
-      ).map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => setRole(id)}
-          className={cn(
-            "rounded px-2 py-1 font-medium transition-colors",
-            role === id
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export function PageHeader({
   title,
   crumbs,
@@ -309,11 +263,6 @@ export function PageHeader({
           {meta && <span className="font-mono text-[11px] text-muted-foreground">{meta}</span>}
           {children}
           {period && onPeriod && <PeriodDropdown value={period} onChange={onPeriod} />}
-          <RoleSwitcher />
-          <ThemeToggle />
-          <span className="grid size-7 place-items-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
-            SL
-          </span>
         </div>
       </div>
     </header>
