@@ -60,19 +60,19 @@ export function AppSidebar() {
     <TooltipProvider delayDuration={150}>
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-xl transition-all duration-300",
+          "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm transition-all duration-300",
           isCollapsed ? "w-20" : "w-64",
         )}
       >
         <div className={cn("flex h-16 shrink-0 items-center border-b border-sidebar-border", isCollapsed ? "justify-center px-3" : "justify-between px-4")}>
           <Link to={liveDestination} params={liveParams as never} aria-label="OEE FRO home" className="flex min-w-0 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground shadow-[0_0_22px_color-mix(in_oklab,var(--primary)_28%,transparent)]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
               <Factory className="size-5" />
             </span>
             {!isCollapsed && (
               <span className="min-w-0">
-                <span className="block truncate font-display text-sm font-semibold">OEE FRO</span>
-                <span className="block truncate text-[10px] uppercase tracking-wider text-muted-foreground">Factory Operations</span>
+                <span className="block truncate text-sm font-semibold">OEE FRO</span>
+                <span className="block truncate text-[10px] text-muted-foreground">Factory Operations</span>
               </span>
             )}
           </Link>

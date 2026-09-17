@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoGround, IsoMachine, IsoMetricCard, IsoPlot, IsoScene, ZoomableMap, iso } from "@/components/oee/iso";
+import { IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap, iso } from "@/components/oee/iso";
 import {
   Delta,
   EmptyState,
@@ -11,7 +11,7 @@ import {
   StatusLegend,
   StatusPill,
 } from "@/components/oee/ui";
-import { STATUS_HEX, tierOf } from "@/lib/oee/config";
+import { STATUS_HEX, TIER_HEX, tierOf } from "@/lib/oee/config";
 import { getZone, type Line } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
 import { useApp } from "@/lib/oee/app-context";
@@ -38,12 +38,6 @@ export const Route = createFileRoute("/live/$plantId/$zoneId/")({
 const S = 40;
 const GAP_X = 1.7;
 const GAP_Y = 1.8;
-const FEATURED_LINES: Record<number, string> = {
-  0: "PCP02 Kemas",
-  4: "BLP33 Kemas",
-  8: "BLP11 Kemas",
-  12: "TUP13 Kemas",
-};
 
 function ZoneView() {
   const { plantId, zoneId } = useParams({ from: "/live/$plantId/$zoneId/" });
@@ -80,7 +74,7 @@ function ZoneView() {
       : [{ label: "Kemas", to: "/" }, { label: `${zone.name} · Shift 1` }];
 
   return (
-    <div className="live-tower flex min-h-screen flex-col bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={zone.name}
         crumbs={crumbs}
@@ -92,7 +86,7 @@ function ZoneView() {
           : {})}
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="live-kpi-strip grid gap-2 rounded-lg sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
           <KpiCard
             label="Zone OEE"
             value={zone.oee.toFixed(1)}
@@ -128,56 +122,56 @@ function ZoneView() {
         </div>
 
         <Panel
-          className="live-map-panel flex-1 overflow-hidden"
+          className="flex-1"
           title="Production Floor Map"
           subtitle={`${zone.lines.length} lines · ${machineCount} machines · bays ${rows} × ${cols} (${rows * cols - zone.lines.length} spare)`}
           action={<StatusLegend />}
           bodyClassName="relative p-0"
         >
-          <Compass />
-          <div className="live-map-grid absolute inset-0 opacity-40" />
           <ZoomableMap className="min-h-[440px] flex-1">
-            <IsoScene viewBox="-255 10 510 280">
+            <IsoScene viewBox="-185 -95 470 360">
               <IsoGround cols={cols * GAP_X + 0.5} rows={rows * GAP_Y + 0.5} s={S} />
-              <IsoPlot x={0.2} y={0.2} w={cols * GAP_X} d={rows * GAP_Y} s={S} fill="var(--map-plot)" />
               {zone.lines.map((l, i) => {
                 const bx = 0.4 + (i % cols) * GAP_X;
                 const by = 0.4 + Math.floor(i / cols) * GAP_Y;
                 const isSel = selected?.id === l.id;
                 return (
-                  <g key={l.id} opacity={selected && !isSel ? 0.45 : 1}>
-                    {i < zone.lines.length - 1 && (() => {
-                      const nextX = 0.4 + ((i + 1) % cols) * GAP_X;
-                      const nextY = 0.4 + Math.floor((i + 1) / cols) * GAP_Y;
-                      const a = iso(bx + 0.85, by + 0.36, 3, S);
-                      const b = iso(nextX, nextY + 0.36, 3, S);
-                      return <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="var(--machine-line)" strokeWidth={1.2} strokeDasharray="3 2" />;
-                    })()}
-                    {l.machines.map((m, mi) => (
-                      <IsoMachine
-                        key={m.id}
-                        x={bx + (mi % 2) * 0.78}
-                        y={by + Math.floor(mi / 2) * 0.72}
-                        s={S}
-                        statusColor={STATUS_HEX[m.status]}
-                        onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
-                      />
-                    ))}
-                    {FEATURED_LINES[i] && (
-                      <IsoMetricCard
-                        x={bx + 0.6}
-                        y={by + 0.3}
-                        s={S}
-                        h={isSel ? 74 : 64}
-                        title={FEATURED_LINES[i]}
-                        value={l.oee}
-                        availability={l.availability}
-                        performance={l.performance}
-                        quality={l.quality}
-                        color={STATUS_HEX[l.status]}
-                        onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
-                      />
-                    )}
+                  <g key={l.id}>
+                    <IsoBlock
+                      x={bx}
+                      y={by}
+                      w={0.9}
+                      d={0.9}
+                      h={isSel ? 30 : 20}
+                      s={S}
+                      color={STATUS_HEX[l.status]}
+                      onClick={() => setSelected(isSel ? null : l)}
+                      dim={!!selected && !isSel}
+                    />
+                    {/* machine status dots inside the line footprint */}
+                    {l.machines.map((m, mi) => {
+                      const p = iso(bx + 0.18 + mi * 0.2, by + 0.45, isSel ? 32 : 22, S);
+                      return (
+                        <circle
+                          key={m.id}
+                          cx={p.x}
+                          cy={p.y}
+                          r={2.6}
+                          fill={STATUS_HEX[m.status]}
+                          stroke="var(--surface)"
+                          strokeWidth={0.8}
+                        />
+                      );
+                    })}
+                    <IsoChip
+                      x={bx + 0.45}
+                      y={by + 0.45}
+                      s={S}
+                      h={isSel ? 32 : 22}
+                      label={l.id}
+                      value={`${l.oee.toFixed(0)}%`}
+                      color={TIER_HEX[tierOf(l.oee)]}
+                    />
                   </g>
                 );
               })}

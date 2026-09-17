@@ -1,22 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoGround, IsoMetricCard, IsoPlot, IsoRoad, IsoScene, IsoTree, ZoomableMap } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap } from "@/components/oee/iso";
 import { Donut, MetricBar, PageHeader, Panel } from "@/components/oee/ui";
-import { TIER_HEX } from "@/lib/oee/config";
+import { TIER_HEX, tierOf } from "@/lib/oee/config";
 import { GROUP, PLANTS } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
-
-const PLANT_POSITIONS = [
-  { x: 2.1, y: 7.2, w: 2.1, d: 1.6, h: 55 },
-  { x: 6.8, y: 1.1, w: 2.9, d: 2.1, h: 74 },
-  { x: 6.7, y: 6.9, w: 2.4, d: 1.8, h: 58 },
-] as const;
-const PLANT_SUMMARIES = [
-  { oee: 77, availability: 87.8, performance: 92.3, quality: 95 },
-  { oee: 77.3, availability: 88.2, performance: 91.8, quality: 95.5 },
-  { oee: 82.6, availability: 92.3, performance: 93.2, quality: 96.1 },
-] as const;
 
 export const Route = createFileRoute("/live/")({
   head: () => ({
@@ -38,7 +27,7 @@ function MultiPlantView() {
   const navigate = useNavigate();
 
   return (
-    <div className="live-tower flex min-h-screen flex-col bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title="Multi Plant View"
         crumbs={[{ label: "Kemas", to: "/" }, { label: "Multi Plant" }]}
@@ -47,103 +36,74 @@ function MultiPlantView() {
         meta="Week 32 · 05-Aug 14:22"
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="live-kpi-strip flex min-h-28 flex-wrap items-stretch overflow-hidden rounded-lg border border-border bg-surface">
-          <div className="flex items-center gap-4 border-r border-border px-4 py-3">
-            <Donut value={79.2} size={88} label="Group OEE" decimals={1} />
+        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
+          <div className="flex items-center gap-4 pr-4">
+            <Donut value={GROUP.oee} size={92} label="Group OEE" />
             <div className="grid w-44 gap-1.5">
-              <p className="text-[9px] font-semibold uppercase text-muted-foreground">Group</p>
-              <MetricBar label="Avail" value={GROUP.availability} />
-              <MetricBar label="Perf" value={GROUP.performance} />
-              <MetricBar label="Qual" value={GROUP.quality} />
+              <MetricBar label="Availability" value={GROUP.availability} />
+              <MetricBar label="Performance" value={GROUP.performance} />
+              <MetricBar label="Quality" value={GROUP.quality} />
             </div>
           </div>
-          <div className="grid flex-1 sm:grid-cols-3">
-            {PLANTS.map((p, index) => (
-              (() => {
-                const summary = PLANT_SUMMARIES[index] ?? {
-                  oee: p.oee,
-                  availability: p.availability,
-                  performance: p.performance,
-                  quality: p.quality,
-                };
-                return (
+          <div className="grid flex-1 gap-3 sm:grid-cols-3">
+            {PLANTS.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
-                className="flex items-center gap-3 border-r border-border px-4 py-3 text-left transition-colors last:border-r-0 hover:bg-muted/50"
+                className="flex items-center gap-3 rounded-lg border border-border p-2.5 text-left transition-colors hover:border-primary"
               >
-                <Donut value={summary.oee} size={58} label={p.id} decimals={1} />
+                <Donut value={p.oee} size={58} label={p.id} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="truncate text-xs font-semibold">{p.name}</p>
-                  <MetricBar label="A" value={summary.availability} />
-                  <MetricBar label="P" value={summary.performance} />
-                  <MetricBar label="Q" value={summary.quality} />
+                  <MetricBar label="A" value={p.availability} />
+                  <MetricBar label="P" value={p.performance} />
+                  <MetricBar label="Q" value={p.quality} />
                 </div>
               </button>
-                );
-              })()
             ))}
           </div>
         </div>
 
         <Panel
-          className="live-map-panel flex-1 overflow-hidden"
+          className="flex-1"
+          title="Group site map"
+          subtitle="Click a plant building to drill into Plant View"
           bodyClassName="relative p-0"
         >
           <Compass />
-          <div className="live-map-grid absolute inset-0 opacity-40" />
           <ZoomableMap className="min-h-[420px] flex-1">
-            <IsoScene viewBox="-300 -65 600 385">
-              <IsoGround cols={11} rows={10} s={34} />
-              <IsoPlot x={0.5} y={0.6} w={4.1} d={4.4} s={34} fill="var(--map-green)" />
-              <IsoPlot x={6.2} y={0.5} w={4.1} d={3.1} s={34} />
-              <IsoPlot x={6.2} y={4} w={4.1} d={2.5} s={34} />
-              <IsoPlot x={0.6} y={6.7} w={3.6} d={2.3} s={34} />
-              <IsoPlot x={5.1} y={6.7} w={5.2} d={2.3} s={34} />
-              <IsoRoad x={4.65} y={0.2} w={0.72} d={9.3} s={34} />
-              <IsoRoad x={0.2} y={5.35} w={10.3} d={0.72} s={34} />
-              {[1.1, 1.8, 2.6, 3.4, 4.2].map((x) => [1.3, 2.3, 3.5].map((y) => <IsoTree key={`${x}-${y}`} x={x} y={y} s={34} />))}
+            <IsoScene viewBox="-205 -115 400 340">
+              <IsoGround cols={7} rows={7} s={34} />
               {PLANTS.map((p, i) => {
-                const tier = i === 2 ? "good" : "warn";
-                const pos = PLANT_POSITIONS[i] ?? PLANT_POSITIONS[0];
-                const value = [77, 77.3, 82.6][i] ?? p.oee;
+                const tier = tierOf(p.oee);
+                const x = 0.6 + (i % 2) * 3.2;
+                const y = 0.6 + i * 1.9;
+                const h = 26 + p.oee * 0.7;
                 return (
                   <g key={p.id}>
-                    <IsoPlot x={pos.x - 0.18} y={pos.y - 0.18} w={pos.w + 0.36} d={pos.d + 0.36} s={34} fill="var(--surface)" stroke={TIER_HEX[tier]} />
                     <IsoBlock
-                      x={pos.x}
-                      y={pos.y}
-                      w={pos.w}
-                      d={pos.d}
-                      h={pos.h}
+                      x={x}
+                      y={y}
+                      w={2.4}
+                      d={1.7}
+                      h={h}
                       s={34}
-                      color="var(--machine-frame)"
-                      stroke={TIER_HEX[tier]}
-                      roofLines
-                      onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
-                    />
-                    <IsoMetricCard
-                      x={pos.x + pos.w / 2}
-                      y={pos.y + pos.d / 2}
-                      s={34}
-                      h={pos.h + 18}
-                      title={p.name}
-                      value={value}
-                      availability={PLANT_SUMMARIES[i]?.availability ?? p.availability}
-                      performance={PLANT_SUMMARIES[i]?.performance ?? p.performance}
-                      quality={PLANT_SUMMARIES[i]?.quality ?? p.quality}
                       color={TIER_HEX[tier]}
                       onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
+                    />
+                    <IsoChip
+                      x={x + 1.2}
+                      y={y + 0.85}
+                      s={34}
+                      h={h}
+                      label={p.id}
+                      value={`${p.oee.toFixed(0)}%`}
+                      color={TIER_HEX[tier]}
                     />
                   </g>
                 );
               })}
-              <g>
-                <IsoPlot x={1.1} y={1.25} w={1.9} d={1.45} s={34} fill="var(--surface)" stroke={TIER_HEX.good} />
-                <IsoBlock x={1.25} y={1.4} w={1.6} d={1.15} h={42} s={34} color="var(--machine-base)" stroke={TIER_HEX.good} roofLines />
-                <IsoMetricCard x={2.05} y={1.95} s={34} h={60} title="AR Warehouse" value={65.8} availability={89.8} performance={73.8} quality={99.9} color={TIER_HEX.warn} />
-              </g>
             </IsoScene>
           </ZoomableMap>
         </Panel>
