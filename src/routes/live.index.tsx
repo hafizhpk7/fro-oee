@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { Compass, IsoBlock, IsoChip, IsoGround, IsoPlot, IsoRoad, IsoScene, IsoTree, ZoomableMap } from "@/components/oee/iso";
 import { Donut, MetricBar, PageHeader, Panel } from "@/components/oee/ui";
-import { TIER_HEX, tierOf } from "@/lib/oee/config";
+import { TIER_HEX } from "@/lib/oee/config";
 import { GROUP, PLANTS } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
 

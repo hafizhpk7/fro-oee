@@ -10,7 +10,7 @@ import {
   Panel,
   StatusLegend,
 } from "@/components/oee/ui";
-import { STATUS_HEX, TIER_HEX, tierOf } from "@/lib/oee/config";
+import { STATUS_HEX, TIER_HEX } from "@/lib/oee/config";
 import { getPlant, plantAlarms } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
 
