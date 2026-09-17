@@ -30,7 +30,7 @@ type Ctx = {
 // Keep a single context instance across hot-module reloads. Without this, a
 // reloaded copy of this module creates a new context and consumers rendered by
 // the still-mounted provider read `null` and crash.
-const globalStore = globalThis as unknown as { __oeeAppContext?: React.Context<Ctx | null> };
+const globalStore = globalThis as unknown as { __oeeAppContext?: Context<Ctx | null> };
 const AppContext = (globalStore.__oeeAppContext ??= createContext<Ctx | null>(null));
 
 export function AppProvider({ children }: { children: ReactNode }) {
