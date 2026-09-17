@@ -520,10 +520,10 @@ export function waterfall(scopeSeed: string) {
   const reject = rand(scopeSeed + "rj", 8, 45, 0);
   const rework = rand(scopeSeed + "rw", 4, 26, 0);
 
-  const scheduled = calendar - unscheduled - idleNoOrder;
-  const gross = scheduled - notAvailable - planned;
-  const net = gross - breakdown - setup - minorStop;
-  const effective = net - speedLoss - reject - rework;
+  const scheduled = calendar - unscheduled - notAvailable - planned;
+  const gross = scheduled - breakdown - idleNoOrder - setup;
+  const net = gross - minorStop - speedLoss;
+  const effective = net - reject - rework;
 
   return {
     milestones: [
@@ -535,11 +535,11 @@ export function waterfall(scopeSeed: string) {
     ],
     losses: [
       { label: "Unscheduled", value: unscheduled, group: "Loading" },
-      { label: "Idle, no order", value: idleNoOrder, group: "Loading" },
-      { label: "Not Available", value: notAvailable, group: "Availability" },
-      { label: "Planned Downtime", value: planned, group: "Availability" },
+      { label: "Not Available", value: notAvailable, group: "Loading" },
+      { label: "Planned Downtime", value: planned, group: "Loading" },
       { label: "Breakdown", value: breakdown, group: "Availability" },
-      { label: "Setup", value: setup, group: "Performance" },
+      { label: "Idle, no order", value: idleNoOrder, group: "Availability" },
+      { label: "Setup", value: setup, group: "Availability" },
       { label: "Minor Stop", value: minorStop, group: "Performance" },
       { label: "Speed Loss", value: speedLoss, group: "Performance" },
       { label: "Reject", value: reject, group: "Quality" },

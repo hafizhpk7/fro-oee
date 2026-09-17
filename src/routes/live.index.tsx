@@ -27,7 +27,7 @@ function MultiPlantView() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title="Multi Plant View"
         crumbs={[{ label: "Kemas", to: "/" }, { label: "Multi Plant" }]}
@@ -35,7 +35,7 @@ function MultiPlantView() {
         onPeriod={setPeriod}
         meta="Week 32 · 05-Aug 14:22"
       />
-      <main className="space-y-3 p-4">
+      <main className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
           <div className="flex items-center gap-4 pr-4">
             <Donut value={GROUP.oee} size={92} label="Group OEE" />
@@ -66,12 +66,13 @@ function MultiPlantView() {
         </div>
 
         <Panel
+          className="flex-1"
           title="Group site map"
           subtitle="Click a plant building to drill into Plant View"
           bodyClassName="relative p-0"
         >
           <Compass />
-          <div className="h-[420px] w-full">
+          <div className="h-full min-h-[420px] w-full">
             <IsoScene viewBox="-205 -115 400 340">
               <IsoGround cols={7} rows={7} s={34} />
               {PLANTS.map((p, i) => {

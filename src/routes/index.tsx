@@ -57,9 +57,9 @@ function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader title="OEE FRO Dashboard" crumbs={[{ label: "Kemas" }, { label: "Prototype" }]} meta="Week 32 · Mock data" />
-      <main className="mx-auto max-w-6xl space-y-4 p-4">
+      <main className="flex w-full flex-1 flex-col space-y-4 p-4">
         <Panel title="Group snapshot" subtitle="Simple average across plants (prototype formula)">
           <div className="flex flex-wrap items-center gap-6">
             <Donut value={GROUP.oee} size={104} label="Group OEE" />

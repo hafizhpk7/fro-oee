@@ -34,12 +34,12 @@ function ShiftPerformancePage() {
 
   if (role !== "section-head") {
     return (
-      <div className="min-h-screen bg-background font-sans text-foreground">
+      <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
         <PageHeader
           title="Shift Performance"
           crumbs={[{ label: "Kemas", to: "/" }, { label: "Shift Performance" }]}
         />
-        <main className="p-4">
+        <main className="flex-1 p-4">
           <EmptyState message="Halaman ini khusus Section Head — ganti role di header untuk membukanya." />
         </main>
       </div>
@@ -51,7 +51,7 @@ function ShiftPerformancePage() {
   const focus = leaders.slice(-3).reverse();
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title="Shift Performance"
         crumbs={[
@@ -63,7 +63,7 @@ function ShiftPerformancePage() {
         meta="Bonus page · built from BR Section Head 3.1-3.8"
       />
       <FilterBar />
-      <main className="space-y-3 p-4">
+      <main className="flex flex-1 flex-col gap-3 p-4">
         <p className="rounded-md border border-dashed border-border px-3 py-2 text-[11px] text-muted-foreground">
           Marked “Outside Scope” in the URS but specified in BR Section Head — included here as a low
           priority preview only (§6).
@@ -76,7 +76,7 @@ function ShiftPerformancePage() {
           <KpiCard label="Batches counted" value={data.opeByLeader.reduce((a, b) => a + b.batches, 0)} />
         </div>
 
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-2">
           <Panel title="OPE by Shift Leader" subtitle="“Non Shift” and “Unmap” shown as plain extra bars">
             <BarByLine data={data.opeByLeader.map((l) => ({ label: l.name, value: l.ope }))} />
           </Panel>

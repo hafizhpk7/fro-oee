@@ -58,7 +58,7 @@ function ParetoPage() {
   const rankNode = child ?? parent;
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title="Root Cause Pareto Chart"
         crumbs={[
@@ -71,11 +71,11 @@ function ParetoPage() {
       />
       <FilterBar />
       {!scope.hasData ? (
-        <main className="p-4">
+        <main className="flex-1 p-4">
           <NoDataForFilters />
         </main>
       ) : (
-        <main className="space-y-3 p-4">
+        <main className="flex flex-1 flex-col gap-3 p-4">
           <Panel
             title="Parent Issues"
             subtitle="All loss categories at once · click a bar to drill down"

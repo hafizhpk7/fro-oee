@@ -47,7 +47,7 @@ function MachineDetail() {
   const stop = machine.currentStop;
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={`${machine.id} — Machine Detail`}
         crumbs={[
@@ -67,7 +67,7 @@ function MachineDetail() {
           params: { plantId, zoneId, lineId },
         }}
       />
-      <main className="space-y-3 p-4">
+      <main className="flex flex-1 flex-col gap-3 p-4">
         <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
           <KpiCard label="Machine OEE" value={machine.oee.toFixed(1)} unit="%" />
           <KpiCard label="Availability" value={machine.availability.toFixed(1)} unit="%" />
@@ -81,7 +81,7 @@ function MachineDetail() {
           />
         </div>
 
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-2">
           <Panel title={`${machine.id} · ${machine.type}`} bodyClassName="p-0">
             <div className="h-[230px] w-full">
               <IsoScene viewBox="-110 -120 220 245">

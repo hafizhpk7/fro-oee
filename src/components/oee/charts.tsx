@@ -31,7 +31,7 @@ export function MeasureToggle({
   onChange: (m: Measure) => void;
 }) {
   return (
-    <div className="flex items-center rounded-md border border-border p-0.5 text-[11px]">
+    <div className="flex items-center rounded-lg bg-muted p-0.5 text-[11px]">
       {(
         [
           ["minutes", "By minutes"],
@@ -43,9 +43,9 @@ export function MeasureToggle({
           type="button"
           onClick={() => onChange(id)}
           className={cn(
-            "rounded px-2 py-0.5 font-medium",
+            "rounded-md px-3 py-1.5 font-semibold transition-colors",
             value === id
-              ? "bg-primary text-primary-foreground"
+              ? "bg-surface text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >
@@ -247,56 +247,83 @@ export function Waterfall({
 }) {
   const max = milestones[0]?.value ?? 1;
   const groupColor: Record<string, string> = {
-    Loading: "var(--status-idle)",
-    Availability: "var(--tier-bad)",
-    Performance: "var(--tier-warn)",
-    Quality: "var(--primary)",
+    Loading: "var(--loss-loading)",
+    Availability: "var(--loss-availability)",
+    Performance: "var(--loss-performance)",
+    Quality: "var(--loss-quality)",
   };
+  const stageLosses = [
+    losses.filter((loss) => loss.group === "Loading"),
+    losses.filter((loss) => loss.group === "Availability"),
+    losses.filter((loss) => loss.group === "Performance"),
+    losses.filter((loss) => loss.group === "Quality"),
+  ];
+  const stageNames = ["Loading", "Availability", "Performance", "Quality"];
+  const effective = milestones[4];
+
   return (
-    <div className="space-y-1.5">
-      {milestones.map((m, i) => (
-        <div key={m.label}>
-          <div className="flex items-center gap-2">
-            <span className="w-40 shrink-0 text-[11px] font-medium">{m.label}</span>
-            <div className="h-4 flex-1 overflow-hidden rounded bg-grid/60">
-              <div
-                className="h-full rounded bg-primary/85"
-                style={{ width: `${(m.value / max) * 100}%` }}
-              />
+    <div className="flex h-full min-h-[580px] flex-col">
+      {stageNames.map((stage, stageIndex) => {
+        const milestone = milestones[stageIndex];
+        if (!milestone) return null;
+        let remaining = milestone.value;
+        const items = stageLosses[stageIndex] ?? [];
+        const milestonePct = Math.round((milestone.value / max) * 1000) / 10;
+
+        return (
+          <div key={stage} className="grid flex-1 grid-cols-[34px_minmax(0,1fr)] border-b border-border/70 last:border-b-0">
+            <div className="relative flex items-center justify-center border-r border-border">
+              <span className="-rotate-90 whitespace-nowrap text-[10px] font-semibold text-muted-foreground">
+                {stage}
+              </span>
             </div>
-            <span className="w-16 shrink-0 text-right font-mono text-[11px]">{m.value} min</span>
-          </div>
-          {losses
-            .filter((_, li) => lossBelongsTo(li, i))
-            .map((l) => (
-              <div key={l.label} className="mt-1 flex items-center gap-2 pl-4">
-                <span className="w-36 shrink-0 truncate text-[10px] text-muted-foreground">
-                  {l.group} · {l.label}
-                </span>
-                <div className="h-2.5 flex-1 overflow-hidden rounded bg-grid/40">
-                  <div
-                    className="h-full rounded"
-                    style={{ width: `${(l.value / max) * 100}%`, background: groupColor[l.group] }}
-                  />
-                </div>
-                <span className="w-16 shrink-0 text-right font-mono text-[10px] text-muted-foreground">
-                  −{l.value} min
+            <div className="flex min-w-0 flex-col justify-evenly gap-2 px-4 py-2.5">
+              <div className="relative h-8 w-full overflow-hidden rounded-md bg-muted">
+                <div className="absolute inset-y-0 left-0 bg-loss-milestone" style={{ width: `${milestonePct}%` }} />
+                <span className="absolute inset-y-0 left-3 flex items-center text-[11px] font-semibold">
+                  {milestone.label} · {milestone.value} min
+                  {stageIndex > 0 ? ` (${milestonePct.toFixed(1)}%)` : ""}
                 </span>
               </div>
-            ))}
+              {items.map((loss) => {
+                const before = remaining;
+                remaining = Math.max(0, remaining - loss.value);
+                const left = (remaining / max) * 100;
+                const width = (Math.min(loss.value, before) / max) * 100;
+                return (
+                  <div key={loss.label} className="relative h-7 w-full bg-muted/50">
+                    <div
+                      className="absolute inset-y-1 rounded-sm"
+                      style={{ left: `${left}%`, width: `${width}%`, background: groupColor[stage] }}
+                    />
+                    <span
+                      className="absolute inset-y-0 flex items-center whitespace-nowrap text-[10px] font-medium"
+                      style={{ right: `${Math.max(0, 100 - left)}%`, marginRight: 8 }}
+                    >
+                      {loss.label} · {loss.value} min
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+      {effective && (
+        <div className="grid grid-cols-[34px_minmax(0,1fr)]">
+          <div className="border-r border-border" />
+          <div className="px-4 pb-2.5 pt-3">
+            <div className="relative h-8 w-full overflow-hidden rounded-md bg-muted">
+              <div className="absolute inset-y-0 left-0 bg-loss-effective" style={{ width: `${(effective.value / max) * 100}%` }} />
+              <span className="absolute inset-y-0 flex items-center whitespace-nowrap pl-3 text-[11px] font-semibold text-loss-effective-foreground" style={{ left: `${(effective.value / max) * 100}%` }}>
+                {effective.label} · {effective.value} min ({((effective.value / max) * 100).toFixed(1)}%)
+              </span>
+            </div>
+          </div>
         </div>
-      ))}
+      )}
     </div>
   );
-}
-
-/** Losses are grouped under the milestone they reduce. */
-function lossBelongsTo(lossIndex: number, milestoneIndex: number) {
-  if (milestoneIndex === 0) return lossIndex === 0 || lossIndex === 1;
-  if (milestoneIndex === 1) return lossIndex >= 2 && lossIndex <= 4;
-  if (milestoneIndex === 2) return lossIndex >= 5 && lossIndex <= 7;
-  if (milestoneIndex === 3) return lossIndex >= 8;
-  return false;
 }
 
 /** Generic recursive loss tree (2-3 levels) — §4.2.2. */
@@ -311,11 +338,10 @@ export function LossTree({
 }) {
   const val = (n: LossNode) => (measure === "minutes" ? n.minutes : n.occurrences);
   const total = nodes.reduce((a, b) => a + val(b), 0) || 1;
-  const sorted = [...nodes].sort((a, b) => val(b) - val(a));
   return (
-    <ul className="space-y-1">
-      {sorted.map((n) => (
-        <LossTreeRow key={n.id} node={n} measure={measure} total={total} depth={0} onOpen={onOpen} />
+    <ul className="h-full divide-y divide-border/70">
+      {nodes.map((n) => (
+        <LossTreeRow key={n.id} node={n} measure={measure} total={total} depth={0} rootLabel={n.label} onOpen={onOpen} />
       ))}
     </ul>
   );
@@ -326,68 +352,79 @@ function LossTreeRow({
   measure,
   total,
   depth,
+  rootLabel,
   onOpen,
 }: {
   node: LossNode;
   measure: Measure;
   total: number;
   depth: number;
+  rootLabel: string;
   onOpen: (node: LossNode) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(
+    node.label === "Breakdown" || node.label === "Bearing seizure",
+  );
   const val = (n: LossNode) => (measure === "minutes" ? n.minutes : n.occurrences);
   const value = val(node);
   const pct = Math.round((value / total) * 1000) / 10;
   const hasChildren = !!node.children?.length;
+  const canExpand = hasChildren && (depth > 0 || rootLabel === "Breakdown" || rootLabel === "Minor Stop");
   const children = [...(node.children ?? [])].sort((a, b) => val(b) - val(a));
-  const childTotal = children.reduce((a, b) => a + val(b), 0) || 1;
+  const tones: Record<string, string> = {
+    Breakdown: "var(--loss-breakdown)",
+    "Minor Stop": "var(--loss-minor-stop)",
+    "Setup + Idle": "var(--loss-setup)",
+    "Speed Loss": "var(--loss-speed)",
+    Reject: "var(--loss-reject)",
+    Rework: "var(--loss-rework)",
+    "Planned Downtime": "var(--loss-planned)",
+  };
+  const baseTone = tones[rootLabel] ?? "var(--primary)";
+  const barTone = depth === 0 ? baseTone : `color-mix(in oklab, ${baseTone} ${depth === 1 ? 78 : 50}%, var(--surface))`;
   return (
-    <li>
+    <li className={depth === 0 ? "" : "border-t border-border/60"}>
       <div
-        className="flex items-center gap-2 rounded-md px-1.5 py-1 hover:bg-grid/50"
-        style={{ paddingLeft: 6 + depth * 14 }}
+        className="grid min-h-12 grid-cols-[minmax(150px,1.05fr)_minmax(150px,1.35fr)_72px_58px] items-center gap-3 px-2 py-2 hover:bg-muted/40"
       >
-        <button
-          type="button"
-          aria-label={hasChildren ? "Expand" : "No children"}
-          onClick={() => hasChildren && setOpen((o) => !o)}
-          className={cn("text-muted-foreground", !hasChildren && "invisible")}
-        >
-          {open ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => onOpen(node)}
-          title="Open root cause pareto"
-          className="w-40 shrink-0 truncate text-left text-[11px] font-medium hover:underline"
-        >
-          {node.label}
-        </button>
-        <div className="h-2.5 flex-1 overflow-hidden rounded bg-grid/40">
-          <div
-            className="h-full rounded"
-            style={{
-              width: `${pct}%`,
-              background: depth === 0 ? "var(--tier-bad)" : depth === 1 ? "var(--tier-warn)" : "var(--primary)",
-            }}
-          />
+        <div className="flex min-w-0 items-center" style={{ paddingLeft: depth * 20 }}>
+          <button
+            type="button"
+            aria-label={canExpand ? (open ? "Collapse" : "Expand") : "No children"}
+            onClick={() => canExpand && setOpen((o) => !o)}
+            className={cn("mr-1 grid size-5 shrink-0 place-items-center text-loss-caret", !canExpand && "invisible")}
+          >
+            {open ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => onOpen(node)}
+            title="Open root cause pareto"
+            className={cn("truncate text-left text-[11px] hover:underline", depth === 0 ? "font-semibold" : "font-medium text-muted-foreground")}
+          >
+            {node.label}
+          </button>
         </div>
-        <span className="w-20 shrink-0 text-right font-mono text-[11px]">
+        <div className="h-3.5 overflow-hidden rounded-sm bg-transparent">
+          <div className="h-full rounded-sm" style={{ width: `${Math.min(100, pct * 4)}%`, background: barTone }} />
+        </div>
+        <span className="text-right font-mono text-[11px] font-semibold">
           {measure === "minutes" ? `${value} min` : `${value}×`}
         </span>
-        <span className="w-12 shrink-0 text-right font-mono text-[10px] text-muted-foreground">
-          {pct}%
+        <span className={cn("rounded-md px-2 py-1 text-center font-mono text-[10px]", depth === 0 ? "bg-loss-badge text-loss-badge-foreground" : depth === 1 ? "bg-muted font-semibold text-muted-foreground" : "text-muted-foreground")}>
+          {Math.round(pct)}%
         </span>
       </div>
-      {open && hasChildren && (
-        <ul className="space-y-1">
+      {open && canExpand && (
+        <ul>
           {children.map((c) => (
             <LossTreeRow
               key={c.id}
               node={c}
               measure={measure}
-              total={childTotal}
+              total={total}
               depth={depth + 1}
+              rootLabel={rootLabel}
               onOpen={onOpen}
             />
           ))}
