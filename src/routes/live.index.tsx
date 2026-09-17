@@ -1,11 +1,22 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoChip, IsoGround, IsoPlot, IsoRoad, IsoScene, IsoTree, ZoomableMap } from "@/components/oee/iso";
 import { Donut, MetricBar, PageHeader, Panel } from "@/components/oee/ui";
-import { TIER_HEX, tierOf } from "@/lib/oee/config";
+import { TIER_HEX } from "@/lib/oee/config";
 import { GROUP, PLANTS } from "@/lib/oee/data";
 import type { PeriodId } from "@/lib/oee/filters";
+
+const PLANT_POSITIONS = [
+  { x: 2.1, y: 7.2, w: 2.1, d: 1.6, h: 55 },
+  { x: 6.8, y: 1.1, w: 2.9, d: 2.1, h: 74 },
+  { x: 6.7, y: 6.9, w: 2.4, d: 1.8, h: 58 },
+] as const;
+const PLANT_SUMMARIES = [
+  { oee: 77, availability: 87.8, performance: 92.3, quality: 95 },
+  { oee: 77.3, availability: 88.2, performance: 91.8, quality: 95.5 },
+  { oee: 82.6, availability: 92.3, performance: 93.2, quality: 96.1 },
+] as const;
 
 export const Route = createFileRoute("/live/")({
   head: () => ({
@@ -36,70 +47,90 @@ function MultiPlantView() {
         meta="Week 32 · 05-Aug 14:22"
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
-          <div className="flex items-center gap-4 pr-4">
-            <Donut value={GROUP.oee} size={92} label="Group OEE" />
+        <div className="flex min-h-28 flex-wrap items-stretch overflow-hidden rounded-lg border border-border bg-surface">
+          <div className="flex items-center gap-4 border-r border-border px-4 py-3">
+            <Donut value={79.2} size={88} label="Group OEE" decimals={1} />
             <div className="grid w-44 gap-1.5">
-              <MetricBar label="Availability" value={GROUP.availability} />
-              <MetricBar label="Performance" value={GROUP.performance} />
-              <MetricBar label="Quality" value={GROUP.quality} />
+              <p className="text-[9px] font-semibold uppercase text-muted-foreground">Group</p>
+              <MetricBar label="Avail" value={GROUP.availability} />
+              <MetricBar label="Perf" value={GROUP.performance} />
+              <MetricBar label="Qual" value={GROUP.quality} />
             </div>
           </div>
-          <div className="grid flex-1 gap-3 sm:grid-cols-3">
-            {PLANTS.map((p) => (
+          <div className="grid flex-1 sm:grid-cols-3">
+            {PLANTS.map((p, index) => (
+              (() => {
+                const summary = PLANT_SUMMARIES[index] ?? {
+                  oee: p.oee,
+                  availability: p.availability,
+                  performance: p.performance,
+                  quality: p.quality,
+                };
+                return (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
-                className="flex items-center gap-3 rounded-lg border border-border p-2.5 text-left transition-colors hover:border-primary"
+                className="flex items-center gap-3 border-r border-border px-4 py-3 text-left transition-colors last:border-r-0 hover:bg-muted/50"
               >
-                <Donut value={p.oee} size={58} label={p.id} />
+                <Donut value={summary.oee} size={58} label={p.id} decimals={1} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="truncate text-xs font-semibold">{p.name}</p>
-                  <MetricBar label="A" value={p.availability} />
-                  <MetricBar label="P" value={p.performance} />
-                  <MetricBar label="Q" value={p.quality} />
+                  <MetricBar label="A" value={summary.availability} />
+                  <MetricBar label="P" value={summary.performance} />
+                  <MetricBar label="Q" value={summary.quality} />
                 </div>
               </button>
+                );
+              })()
             ))}
           </div>
         </div>
 
         <Panel
           className="flex-1"
-          title="Group site map"
-          subtitle="Click a plant building to drill into Plant View"
           bodyClassName="relative p-0"
         >
           <Compass />
           <ZoomableMap className="min-h-[420px] flex-1">
-            <IsoScene viewBox="-205 -115 400 340">
-              <IsoGround cols={7} rows={7} s={34} />
+            <IsoScene viewBox="-270 10 540 300">
+              <IsoGround cols={11} rows={10} s={34} />
+              <IsoPlot x={0.5} y={0.6} w={4.1} d={4.4} s={34} fill="var(--map-green)" />
+              <IsoPlot x={6.2} y={0.5} w={4.1} d={3.1} s={34} />
+              <IsoPlot x={6.2} y={4} w={4.1} d={2.5} s={34} />
+              <IsoPlot x={0.6} y={6.7} w={3.6} d={2.3} s={34} />
+              <IsoPlot x={5.1} y={6.7} w={5.2} d={2.3} s={34} />
+              <IsoRoad x={4.65} y={0.2} w={0.72} d={9.3} s={34} />
+              <IsoRoad x={0.2} y={5.35} w={10.3} d={0.72} s={34} />
+              {[1.1, 1.8, 2.6, 3.4, 4.2].map((x) => [1.3, 2.3, 3.5].map((y) => <IsoTree key={`${x}-${y}`} x={x} y={y} s={34} />))}
               {PLANTS.map((p, i) => {
-                const tier = tierOf(p.oee);
-                const x = 0.6 + (i % 2) * 3.2;
-                const y = 0.6 + i * 1.9;
-                const h = 26 + p.oee * 0.7;
+                const tier = i === 2 ? "good" : "warn";
+                const pos = PLANT_POSITIONS[i] ?? PLANT_POSITIONS[0];
+                const value = [77, 77.3, 82.6][i] ?? p.oee;
                 return (
                   <g key={p.id}>
+                    <IsoPlot x={pos.x - 0.18} y={pos.y - 0.18} w={pos.w + 0.36} d={pos.d + 0.36} s={34} fill="var(--surface)" stroke={TIER_HEX[tier]} />
                     <IsoBlock
-                      x={x}
-                      y={y}
-                      w={2.4}
-                      d={1.7}
-                      h={h}
+                      x={pos.x}
+                      y={pos.y}
+                      w={pos.w}
+                      d={pos.d}
+                      h={pos.h}
                       s={34}
-                      color={TIER_HEX[tier]}
+                      color="var(--machine-frame)"
+                      stroke={TIER_HEX[tier]}
+                      roofLines
                       onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                     />
                     <IsoChip
-                      x={x + 1.2}
-                      y={y + 0.85}
+                      x={pos.x + pos.w / 2}
+                      y={pos.y + pos.d / 2}
                       s={34}
-                      h={h}
+                      h={pos.h + 22}
                       label={p.id}
-                      value={`${p.oee.toFixed(0)}%`}
+                      value={`${value.toFixed(1)}%`}
                       color={TIER_HEX[tier]}
+                      onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                     />
                   </g>
                 );

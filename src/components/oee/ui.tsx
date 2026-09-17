@@ -49,11 +49,13 @@ export function Donut({
   size = 96,
   label = "OEE",
   caption,
+  decimals = 0,
 }: {
   value: number;
   size?: number;
   label?: string;
   caption?: string;
+  decimals?: number;
 }) {
   const stroke = Math.max(7, size * 0.1);
   const r = (size - stroke) / 2;
@@ -76,7 +78,7 @@ export function Donut({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
         <span className={cn("font-mono font-semibold", TIER_TEXT[tier])} style={{ fontSize: size * 0.24 }}>
-          {value.toFixed(0)}%
+          {value.toFixed(decimals)}%
         </span>
         <span className="mt-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">{label}</span>
         {caption && <span className="text-[9px] text-muted-foreground">{caption}</span>}

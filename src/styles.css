@@ -74,6 +74,11 @@
   --color-loss-caret: var(--loss-caret);
   --color-loss-badge: var(--loss-badge);
   --color-loss-badge-foreground: var(--loss-badge-foreground);
+  --color-map-plot: var(--map-plot);
+  --color-map-green: var(--map-green);
+  --color-map-road: var(--map-road);
+  --color-machine-base: var(--machine-base);
+  --color-machine-frame: var(--machine-frame);
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
@@ -147,6 +152,15 @@
   --loss-caret: oklch(0.57 0.2 27);
   --loss-badge: oklch(0.93 0.05 252);
   --loss-badge-foreground: oklch(0.5 0.19 255);
+  --map-plot: oklch(0.945 0.008 250);
+  --map-line: oklch(0.84 0.015 250);
+  --map-green: oklch(0.82 0.06 145);
+  --map-tree-trunk: oklch(0.62 0.04 95);
+  --map-road: oklch(0.78 0.018 250);
+  --map-road-mark: oklch(0.96 0.004 250);
+  --machine-base: oklch(0.86 0.014 250);
+  --machine-frame: oklch(0.96 0.01 250 / 72%);
+  --machine-line: oklch(0.76 0.024 250);
 }
 
 .dark {
@@ -209,6 +223,15 @@
   --loss-caret: oklch(0.7 0.18 27);
   --loss-badge: oklch(0.3 0.08 252);
   --loss-badge-foreground: oklch(0.75 0.14 255);
+  --map-plot: oklch(0.25 0.025 260);
+  --map-line: oklch(0.4 0.025 260);
+  --map-green: oklch(0.43 0.08 150);
+  --map-tree-trunk: oklch(0.56 0.05 95);
+  --map-road: oklch(0.34 0.025 260);
+  --map-road-mark: oklch(0.58 0.018 255);
+  --machine-base: oklch(0.38 0.025 255);
+  --machine-frame: oklch(0.48 0.025 255 / 72%);
+  --machine-line: oklch(0.62 0.03 255);
 }
 
 @layer base {
