@@ -65,7 +65,7 @@ export function AppSidebar() {
         )}
       >
         <div className={cn("flex h-16 shrink-0 items-center border-b border-sidebar-border", isCollapsed ? "justify-center px-3" : "justify-between px-4")}>
-          <Link to="/" aria-label="OEE FRO home" className="flex min-w-0 items-center gap-3">
+          <Link to={liveDestination} params={liveParams as never} aria-label="OEE FRO home" className="flex min-w-0 items-center gap-3">
             <span className="grid size-10 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
               <Factory className="size-5" />
             </span>
