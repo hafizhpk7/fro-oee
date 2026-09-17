@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyticsIndexRouteImport } from './routes/analytics.index'
+import { Route as AnalyticsLossTreeRouteImport } from './routes/analytics.loss-tree'
 import { Route as LiveIndexRouteImport } from './routes/live.index'
 import { Route as LivePlantIdIndexRouteImport } from './routes/live.$plantId.index'
 import { Route as LivePlantIdZoneIdIndexRouteImport } from './routes/live.$plantId.$zoneId.index'
@@ -19,6 +21,16 @@ import { Route as LivePlantIdZoneIdLineIdMachineIdRouteImport } from './routes/l
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsIndexRoute = AnalyticsIndexRouteImport.update({
+  id: '/analytics/',
+  path: '/analytics/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsLossTreeRoute = AnalyticsLossTreeRouteImport.update({
+  id: '/analytics/loss-tree',
+  path: '/analytics/loss-tree',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LiveIndexRoute = LiveIndexRouteImport.update({
@@ -51,6 +63,8 @@ const LivePlantIdZoneIdLineIdMachineIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics/loss-tree': typeof AnalyticsLossTreeRoute
+  '/analytics/': typeof AnalyticsIndexRoute
   '/live/': typeof LiveIndexRoute
   '/live/$plantId/': typeof LivePlantIdIndexRoute
   '/live/$plantId/$zoneId/': typeof LivePlantIdZoneIdIndexRoute
@@ -59,6 +73,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics/loss-tree': typeof AnalyticsLossTreeRoute
+  '/analytics': typeof AnalyticsIndexRoute
   '/live': typeof LiveIndexRoute
   '/live/$plantId': typeof LivePlantIdIndexRoute
   '/live/$plantId/$zoneId': typeof LivePlantIdZoneIdIndexRoute
@@ -68,6 +84,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics/loss-tree': typeof AnalyticsLossTreeRoute
+  '/analytics/': typeof AnalyticsIndexRoute
   '/live/': typeof LiveIndexRoute
   '/live/$plantId/': typeof LivePlantIdIndexRoute
   '/live/$plantId/$zoneId/': typeof LivePlantIdZoneIdIndexRoute
@@ -78,6 +96,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analytics/loss-tree'
+    | '/analytics/'
     | '/live/'
     | '/live/$plantId/'
     | '/live/$plantId/$zoneId/'
@@ -86,6 +106,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analytics/loss-tree'
+    | '/analytics'
     | '/live'
     | '/live/$plantId'
     | '/live/$plantId/$zoneId'
@@ -94,6 +116,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/analytics/loss-tree'
+    | '/analytics/'
     | '/live/'
     | '/live/$plantId/'
     | '/live/$plantId/$zoneId/'
@@ -103,6 +127,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsLossTreeRoute: typeof AnalyticsLossTreeRoute
+  AnalyticsIndexRoute: typeof AnalyticsIndexRoute
   LiveIndexRoute: typeof LiveIndexRoute
   LivePlantIdIndexRoute: typeof LivePlantIdIndexRoute
   LivePlantIdZoneIdIndexRoute: typeof LivePlantIdZoneIdIndexRoute
@@ -117,6 +143,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics/': {
+      id: '/analytics/'
+      path: '/analytics'
+      fullPath: '/analytics/'
+      preLoaderRoute: typeof AnalyticsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics/loss-tree': {
+      id: '/analytics/loss-tree'
+      path: '/analytics/loss-tree'
+      fullPath: '/analytics/loss-tree'
+      preLoaderRoute: typeof AnalyticsLossTreeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/live/': {
@@ -159,6 +199,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsLossTreeRoute: AnalyticsLossTreeRoute,
+  AnalyticsIndexRoute: AnalyticsIndexRoute,
   LiveIndexRoute: LiveIndexRoute,
   LivePlantIdIndexRoute: LivePlantIdIndexRoute,
   LivePlantIdZoneIdIndexRoute: LivePlantIdZoneIdIndexRoute,
