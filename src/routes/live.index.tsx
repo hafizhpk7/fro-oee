@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoChip, IsoGround, IsoPlot, IsoRoad, IsoScene, IsoTree, ZoomableMap } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoGround, IsoMetricCard, IsoPlot, IsoRoad, IsoScene, IsoTree, ZoomableMap } from "@/components/oee/iso";
 import { Donut, MetricBar, PageHeader, Panel } from "@/components/oee/ui";
 import { TIER_HEX } from "@/lib/oee/config";
 import { GROUP, PLANTS } from "@/lib/oee/data";
@@ -38,7 +38,7 @@ function MultiPlantView() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
+    <div className="live-tower flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title="Multi Plant View"
         crumbs={[{ label: "Kemas", to: "/" }, { label: "Multi Plant" }]}
@@ -47,7 +47,7 @@ function MultiPlantView() {
         meta="Week 32 · 05-Aug 14:22"
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex min-h-28 flex-wrap items-stretch overflow-hidden rounded-lg border border-border bg-surface">
+        <div className="live-kpi-strip flex min-h-28 flex-wrap items-stretch overflow-hidden rounded-lg border border-border bg-surface">
           <div className="flex items-center gap-4 border-r border-border px-4 py-3">
             <Donut value={79.2} size={88} label="Group OEE" decimals={1} />
             <div className="grid w-44 gap-1.5">
@@ -88,12 +88,13 @@ function MultiPlantView() {
         </div>
 
         <Panel
-          className="flex-1"
+          className="live-map-panel flex-1 overflow-hidden"
           bodyClassName="relative p-0"
         >
           <Compass />
+          <div className="live-map-grid absolute inset-0 opacity-40" />
           <ZoomableMap className="min-h-[420px] flex-1">
-            <IsoScene viewBox="-270 10 540 300">
+            <IsoScene viewBox="-300 -65 600 385">
               <IsoGround cols={11} rows={10} s={34} />
               <IsoPlot x={0.5} y={0.6} w={4.1} d={4.4} s={34} fill="var(--map-green)" />
               <IsoPlot x={6.2} y={0.5} w={4.1} d={3.1} s={34} />
@@ -122,19 +123,27 @@ function MultiPlantView() {
                       roofLines
                       onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                     />
-                    <IsoChip
+                    <IsoMetricCard
                       x={pos.x + pos.w / 2}
                       y={pos.y + pos.d / 2}
                       s={34}
-                      h={pos.h + 22}
-                      label={p.id}
-                      value={`${value.toFixed(1)}%`}
+                      h={pos.h + 18}
+                      title={p.name}
+                      value={value}
+                      availability={PLANT_SUMMARIES[i]?.availability ?? p.availability}
+                      performance={PLANT_SUMMARIES[i]?.performance ?? p.performance}
+                      quality={PLANT_SUMMARIES[i]?.quality ?? p.quality}
                       color={TIER_HEX[tier]}
                       onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                     />
                   </g>
                 );
               })}
+              <g>
+                <IsoPlot x={1.1} y={1.25} w={1.9} d={1.45} s={34} fill="var(--surface)" stroke={TIER_HEX.good} />
+                <IsoBlock x={1.25} y={1.4} w={1.6} d={1.15} h={42} s={34} color="var(--machine-base)" stroke={TIER_HEX.good} roofLines />
+                <IsoMetricCard x={2.05} y={1.95} s={34} h={60} title="AR Warehouse" value={65.8} availability={89.8} performance={73.8} quality={99.9} color={TIER_HEX.warn} />
+              </g>
             </IsoScene>
           </ZoomableMap>
         </Panel>
