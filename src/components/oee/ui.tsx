@@ -85,7 +85,7 @@ export function Donut({
   );
 }
 
-export function Delta({ value, suffix = "pp" }: { value: number; suffix?: string }) {
+export function Delta({ value, suffix = "%" }: { value: number; suffix?: string }) {
   const up = value >= 0;
   return (
     <span

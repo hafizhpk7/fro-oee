@@ -436,7 +436,7 @@ function LossTreeRow({
 
 export function DivergingList({
   rows,
-  unit = "pp",
+  unit = "%",
 }: {
   rows: { label: string; delta: number }[];
   unit?: string;

@@ -92,7 +92,7 @@ function ZoneView() {
             value={zone.oee.toFixed(1)}
             unit="%"
             tone={tierOf(zone.oee) === "good" ? "good" : tierOf(zone.oee) === "warn" ? "warn" : "bad"}
-            caption={zone.oee >= 75 ? "On target" : `${(75 - zone.oee).toFixed(1)}pp below target`}
+            caption={zone.oee >= 75 ? "On target" : `${(75 - zone.oee).toFixed(1)}% below target`}
           />
           <KpiCard
             label="Availability"
