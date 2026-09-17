@@ -44,7 +44,7 @@ function MultiPlantView() {
       <main className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex min-h-28 flex-wrap items-stretch overflow-hidden rounded-lg border border-border bg-surface">
           <div className="flex items-center gap-4 border-r border-border px-4 py-3">
-            <Donut value={79.2} size={88} label="Group OEE" />
+            <Donut value={79.2} size={88} label="Group OEE" decimals={1} />
             <div className="grid w-44 gap-1.5">
               <p className="text-[9px] font-semibold uppercase text-muted-foreground">Group</p>
               <MetricBar label="Avail" value={GROUP.availability} />
@@ -60,7 +60,7 @@ function MultiPlantView() {
                 onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                 className="flex items-center gap-3 border-r border-border px-4 py-3 text-left transition-colors last:border-r-0 hover:bg-muted/50"
               >
-                <Donut value={[77, 77.3, 82.6][index] ?? p.oee} size={58} label={p.id} />
+                <Donut value={[77, 77.3, 82.6][index] ?? p.oee} size={58} label={p.id} decimals={1} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className="truncate text-xs font-semibold">{p.name}</p>
                   <MetricBar label="A" value={p.availability} />
@@ -78,7 +78,7 @@ function MultiPlantView() {
         >
           <Compass />
           <ZoomableMap className="min-h-[420px] flex-1">
-            <IsoScene viewBox="-315 -185 630 450">
+            <IsoScene viewBox="-315 -5 630 340">
               <IsoGround cols={11} rows={10} s={34} />
               <IsoPlot x={0.5} y={0.6} w={4.1} d={4.4} s={34} fill="var(--map-green)" />
               <IsoPlot x={6.2} y={0.5} w={4.1} d={3.1} s={34} />
@@ -89,7 +89,7 @@ function MultiPlantView() {
               <IsoRoad x={0.2} y={5.35} w={10.3} d={0.72} s={34} />
               {[1.1, 1.8, 2.6, 3.4, 4.2].map((x) => [1.3, 2.3, 3.5].map((y) => <IsoTree key={`${x}-${y}`} x={x} y={y} s={34} />))}
               {PLANTS.map((p, i) => {
-                const tier = tierOf(p.oee);
+                const tier = i === 2 ? "good" : "warn";
                 const pos = PLANT_POSITIONS[i] ?? PLANT_POSITIONS[0];
                 const value = [77, 77.3, 82.6][i] ?? p.oee;
                 return (
@@ -104,6 +104,7 @@ function MultiPlantView() {
                       s={34}
                       color="var(--machine-frame)"
                       stroke={TIER_HEX[tier]}
+                      roofLines
                       onClick={() => navigate({ to: "/live/$plantId", params: { plantId: p.id } })}
                     />
                     <IsoChip

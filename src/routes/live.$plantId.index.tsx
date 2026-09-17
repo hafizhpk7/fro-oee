@@ -75,7 +75,7 @@ function PlantView() {
         <div className="grid min-h-28 overflow-hidden rounded-lg border border-border bg-surface xl:grid-cols-[1.7fr_0.8fr]">
           <div className="flex min-w-0 flex-wrap items-stretch">
           <div className="flex items-center gap-4 border-r border-border px-4 py-3">
-            <Donut value={plant.id === "J2" ? 76.9 : plant.oee} size={88} label={`${plant.id} OEE`} />
+            <Donut value={plant.id === "J2" ? 76.9 : plant.oee} size={88} label={`${plant.id} OEE`} decimals={1} />
             <div className="grid w-44 gap-1.5">
               <MetricBar label="Availability" value={plant.availability} />
               <MetricBar label="Performance" value={plant.performance} />
@@ -123,7 +123,7 @@ function PlantView() {
         <Panel className="flex-1" action={<StatusLegend />} bodyClassName="relative p-0">
             <Compass />
             <ZoomableMap className="min-h-[380px] flex-1">
-              <IsoScene viewBox="-300 -135 600 390">
+              <IsoScene viewBox="-300 5 600 315">
                 <IsoGround cols={10.5} rows={8.5} s={34} />
                 <IsoPlot x={0.35} y={0.35} w={9.8} d={7.8} s={34} fill="var(--map-plot)" />
                 {plant.zones.map((z, zi) =>
@@ -162,7 +162,7 @@ function PlantView() {
                     h={40}
                     label={z.name}
                     value={`${z.oee.toFixed(0)}%`}
-                    color={TIER_HEX[tierOf(z.oee)]}
+                    color={TIER_HEX[zi === 1 ? "good" : "warn"]}
                     onClick={() => navigate({ to: "/live/$plantId/$zoneId", params: { plantId: plant.id, zoneId: z.id } })}
                   />
                 )})}

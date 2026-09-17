@@ -190,6 +190,7 @@ export function IsoBlock({
   s = 26,
   color,
   stroke,
+  roofLines = false,
   onClick,
   dim,
 }: {
@@ -201,6 +202,7 @@ export function IsoBlock({
   s?: number;
   color: string;
   stroke?: string;
+  roofLines?: boolean;
   onClick?: () => void;
   dim?: boolean;
 }) {
@@ -219,6 +221,18 @@ export function IsoBlock({
       opacity={dim ? 0.5 : 1}
     >
       <polygon points={pts([t1, t2, t3, t4])} fill={color} stroke={stroke} strokeWidth={stroke ? 1.2 : 0} />
+      {roofLines && [0.18, 0.36, 0.54, 0.72, 0.9].map((ratio) => (
+        <line
+          key={ratio}
+          x1={t1.x + (t2.x - t1.x) * ratio}
+          y1={t1.y + (t2.y - t1.y) * ratio}
+          x2={t4.x + (t3.x - t4.x) * ratio}
+          y2={t4.y + (t3.y - t4.y) * ratio}
+          stroke="var(--machine-line)"
+          strokeWidth={0.65}
+          opacity={0.7}
+        />
+      ))}
       <polygon points={pts([t4, t3, b3, b4])} fill={color} stroke={stroke} strokeWidth={stroke ? 1.2 : 0} style={{ filter: "brightness(0.78)" }} />
       <polygon points={pts([t2, t3, b3, b2])} fill={color} stroke={stroke} strokeWidth={stroke ? 1.2 : 0} style={{ filter: "brightness(0.6)" }} />
     </g>
