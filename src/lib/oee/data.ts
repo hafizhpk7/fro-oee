@@ -28,7 +28,7 @@ export type Machine = {
     elapsedMinutes: number;
     lossPath: string;
     downstream: string[];
-  };
+  } | undefined;
 };
 
 export type Line = {
@@ -50,7 +50,7 @@ export type Line = {
   batch: string;
   mpqTarget: number;
   bottleneck: string;
-  fault?: string;
+  fault?: string | undefined;
   bay: { row: number; col: number };
   machines: Machine[];
 };
