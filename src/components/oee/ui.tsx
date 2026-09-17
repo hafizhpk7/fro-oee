@@ -24,7 +24,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "flex min-w-0 flex-col rounded-lg border border-border bg-surface shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+        "flex h-full min-h-0 min-w-0 flex-col rounded-lg border border-border bg-surface shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
         className,
       )}
     >
@@ -39,7 +39,7 @@ export function Panel({
           {action}
         </header>
       )}
-      <div className={cn("min-w-0 flex-1 p-4", bodyClassName)}>{children}</div>
+      <div className={cn("flex min-h-0 min-w-0 w-full flex-1 flex-col p-4", bodyClassName)}>{children}</div>
     </section>
   );
 }

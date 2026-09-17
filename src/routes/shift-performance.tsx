@@ -76,11 +76,11 @@ function ShiftPerformancePage() {
           <KpiCard label="Batches counted" value={data.opeByLeader.reduce((a, b) => a + b.batches, 0)} />
         </div>
 
-        <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-2">
-          <Panel title="OPE by Shift Leader" subtitle="“Non Shift” and “Unmap” shown as plain extra bars">
+        <div className="grid min-h-[640px] flex-1 auto-rows-fr items-stretch gap-3 lg:grid-cols-2">
+          <Panel title="OPE by Shift Leader" subtitle="“Non Shift” and “Unmap” shown as plain extra bars" bodyClassName="relative min-h-[250px] h-full w-full flex-1">
             <BarByLine data={data.opeByLeader.map((l) => ({ label: l.name, value: l.ope }))} />
           </Panel>
-          <Panel title="Weekly Performance" subtitle="Tooltip shows all shifts; click legend to hide a shift">
+          <Panel title="Weekly Performance" subtitle="Tooltip shows all shifts; click legend to hide a shift" bodyClassName="relative min-h-[250px] h-full w-full flex-1">
             <TrendChart
               data={data.weekly}
               keys={["Shift 1", "Shift 2", "Shift 3", "Non Shift"]}

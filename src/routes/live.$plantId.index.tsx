@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap } from "@/components/oee/iso";
 import {
   Donut,
   EmptyState,
@@ -104,7 +104,7 @@ function PlantView() {
             bodyClassName="relative p-0"
           >
             <Compass />
-            <div className="h-full min-h-[380px] w-full">
+            <ZoomableMap className="min-h-[380px] flex-1">
               <IsoScene viewBox="-185 -105 365 305">
                 <IsoGround cols={6} rows={6} s={34} />
                 {plant.zones.map((z, zi) =>
@@ -144,7 +144,7 @@ function PlantView() {
                   />
                 ))}
               </IsoScene>
-            </div>
+            </ZoomableMap>
           </Panel>
 
           <Panel

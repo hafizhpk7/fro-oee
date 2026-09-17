@@ -78,7 +78,7 @@ export function TrendChart({
   data,
   keys,
   reference,
-  height = 220,
+  height,
 }: {
   data: Point[];
   keys: string[];
@@ -87,7 +87,7 @@ export function TrendChart({
 }) {
   const colors = ["var(--primary)", "var(--tier-good)", "var(--tier-warn)", "var(--tier-bad)"];
   return (
-    <div style={{ height }}>
+    <div className="relative min-h-[250px] w-full flex-1" style={height ? { height } : undefined}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
           <CartesianGrid stroke="var(--grid)" vertical={false} />
@@ -124,14 +124,14 @@ export function TrendChart({
 export function BarByLine({
   data,
   onSelect,
-  height = 240,
+  height,
 }: {
   data: { label: string; value: number }[];
   onSelect?: (label: string) => void;
   height?: number;
 }) {
   return (
-    <div style={{ height }}>
+    <div className="relative min-h-[250px] w-full flex-1" style={height ? { height } : undefined}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: -18 }}>
           <CartesianGrid stroke="var(--grid)" vertical={false} />
@@ -164,7 +164,7 @@ export function ParetoChart({
   data,
   selected,
   onSelect,
-  height = 230,
+  height,
 }: {
   data: { label: string; value: number; id: string }[];
   selected?: string | undefined;
@@ -178,7 +178,7 @@ export function ParetoChart({
     return { ...d, cumulative: Math.round((running / total) * 1000) / 10 };
   });
   return (
-    <div style={{ height }}>
+    <div className="relative min-h-[250px] w-full flex-1" style={height ? { height } : undefined}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={rows} margin={{ top: 8, right: 4, bottom: 0, left: -18 }}>
           <CartesianGrid stroke="var(--grid)" vertical={false} />
