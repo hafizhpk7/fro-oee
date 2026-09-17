@@ -132,7 +132,7 @@ function LineDetail() {
             bodyClassName="p-0"
           >
             <div className="h-[210px] w-full">
-              <IsoScene viewBox="-260 -120 520 240">
+              <IsoScene viewBox="-60 -75 235 195">
                 <IsoGround cols={line.machines.length + 1} rows={1.4} s={38} />
                 {line.machines.map((m, i) => (
                   <g key={m.id}>

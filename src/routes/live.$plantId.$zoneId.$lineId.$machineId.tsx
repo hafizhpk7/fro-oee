@@ -84,7 +84,7 @@ function MachineDetail() {
         <div className="grid gap-3 lg:grid-cols-2">
           <Panel title={`${machine.id} · ${machine.type}`} bodyClassName="p-0">
             <div className="h-[230px] w-full">
-              <IsoScene viewBox="-160 -140 320 260">
+              <IsoScene viewBox="-110 -120 220 245">
                 <IsoGround cols={2.4} rows={2.4} s={46} />
                 <IsoBlock x={0.3} y={0.3} w={1.6} d={1.6} h={30} s={46} color="var(--grid)" />
                 <IsoBlock

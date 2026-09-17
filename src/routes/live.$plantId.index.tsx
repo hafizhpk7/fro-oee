@@ -105,7 +105,7 @@ function PlantView() {
           >
             <Compass />
             <div className="h-[380px] w-full">
-              <IsoScene viewBox="-300 -150 600 380">
+              <IsoScene viewBox="-185 -105 365 305">
                 <IsoGround cols={6} rows={6} s={34} />
                 {plant.zones.map((z, zi) =>
                   z.lines.slice(0, 12).map((l, li) => {

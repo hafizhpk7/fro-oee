@@ -72,7 +72,7 @@ function MultiPlantView() {
         >
           <Compass />
           <div className="h-[420px] w-full">
-            <IsoScene viewBox="-320 -170 640 420">
+            <IsoScene viewBox="-205 -115 400 340">
               <IsoGround cols={7} rows={7} s={34} />
               {PLANTS.map((p, i) => {
                 const tier = tierOf(p.oee);

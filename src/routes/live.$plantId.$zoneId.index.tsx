@@ -35,7 +35,9 @@ export const Route = createFileRoute("/live/$plantId/$zoneId/")({
   component: ZoneView,
 });
 
-const S = 30;
+const S = 40;
+const GAP_X = 1.7;
+const GAP_Y = 1.8;
 
 function ZoneView() {
   const { plantId, zoneId } = useParams({ from: "/live/$plantId/$zoneId/" });
@@ -126,11 +128,11 @@ function ZoneView() {
           bodyClassName="relative p-0"
         >
           <div className="h-[440px] w-full">
-            <IsoScene viewBox="-300 -180 600 430">
-              <IsoGround cols={cols + 1} rows={rows + 1} s={S} />
+            <IsoScene viewBox="-185 -95 470 360">
+              <IsoGround cols={cols * GAP_X + 0.5} rows={rows * GAP_Y + 0.5} s={S} />
               {zone.lines.map((l, i) => {
-                const bx = 0.4 + (i % cols) * 1.1;
-                const by = 0.4 + Math.floor(i / cols) * 1.25;
+                const bx = 0.4 + (i % cols) * GAP_X;
+                const by = 0.4 + Math.floor(i / cols) * GAP_Y;
                 const isSel = selected?.id === l.id;
                 return (
                   <g key={l.id}>
