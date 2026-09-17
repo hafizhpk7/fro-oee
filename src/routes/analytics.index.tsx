@@ -130,8 +130,8 @@ function AnalyticsPage() {
             </KpiCard>
           </div>
 
-          <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-[1.4fr_1fr]">
-            <Panel title="OEE Trend" subtitle="Dashed line = reference target 75%" bodyClassName="min-h-[250px]">
+          <div className="grid min-h-[340px] flex-1 auto-rows-fr items-stretch gap-3 lg:grid-cols-[1.4fr_1fr]">
+            <Panel title="OEE Trend" subtitle="Dashed line = reference target 75%" bodyClassName="relative min-h-[250px] h-full w-full flex-1">
               <TrendChart data={trend} keys={Object.keys(trend[0] ?? {}).filter((k) => k !== "label")} reference={75} />
             </Panel>
 
@@ -178,6 +178,7 @@ function AnalyticsPage() {
           </div>
 
           <Panel
+            className="min-h-[340px] flex-1"
             title="OEE by Line"
             subtitle={sortAsc ? "Lowest → highest" : "Highest → lowest"}
             action={
@@ -207,6 +208,7 @@ function AnalyticsPage() {
                 </button>
               </div>
             }
+            bodyClassName="relative min-h-[250px] h-full w-full flex-1"
           >
             {byLine.length === 0 ? <NoDataForFilters /> : <BarByLine data={byLine} />}
           </Panel>

@@ -197,15 +197,15 @@ function LineDetail() {
           </ul>
         </Panel>
 
-        <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-3">
-          <Panel title="OEE trend">
-            <TrendChart data={oeeTrend} keys={["OEE"]} reference={75} height={180} />
+        <div className="grid min-h-[340px] flex-1 auto-rows-fr items-stretch gap-3 lg:grid-cols-3">
+          <Panel title="OEE trend" bodyClassName="relative min-h-[250px] h-full w-full flex-1">
+            <TrendChart data={oeeTrend} keys={["OEE"]} reference={75} />
           </Panel>
-          <Panel title="Output trend" subtitle="Cumulative %, resets on PO/batch change">
-            <TrendChart data={outputTrend} keys={["Cumulative %", "Plan"]} height={180} />
+          <Panel title="Output trend" subtitle="Cumulative %, resets on PO/batch change" bodyClassName="relative min-h-[250px] h-full w-full flex-1">
+            <TrendChart data={outputTrend} keys={["Cumulative %", "Plan"]} />
           </Panel>
-          <Panel title="Line speed" subtitle={`Standard ${line.stdSpeed} ppm`}>
-            <TrendChart data={speedTrend} keys={["Speed"]} reference={line.stdSpeed} height={180} />
+          <Panel title="Line speed" subtitle={`Standard ${line.stdSpeed} ppm`} bodyClassName="relative min-h-[250px] h-full w-full flex-1">
+            <TrendChart data={speedTrend} keys={["Speed"]} reference={line.stdSpeed} />
           </Panel>
         </div>
 

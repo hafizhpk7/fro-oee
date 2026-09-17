@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { IsoBlock, IsoChip, IsoGround, IsoScene, iso } from "@/components/oee/iso";
+import { IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap, iso } from "@/components/oee/iso";
 import {
   Delta,
   EmptyState,
@@ -128,7 +128,7 @@ function ZoneView() {
           action={<StatusLegend />}
           bodyClassName="relative p-0"
         >
-          <div className="h-full min-h-[440px] w-full">
+          <ZoomableMap className="min-h-[440px] flex-1">
             <IsoScene viewBox="-185 -95 470 360">
               <IsoGround cols={cols * GAP_X + 0.5} rows={rows * GAP_Y + 0.5} s={S} />
               {zone.lines.map((l, i) => {
@@ -176,7 +176,7 @@ function ZoneView() {
                 );
               })}
             </IsoScene>
-          </div>
+          </ZoomableMap>
 
           {selected && (
             <div className="absolute right-4 top-14 w-64 rounded-lg border border-border bg-surface p-3 shadow-lg">

@@ -3,7 +3,145 @@
  * illustrations; for a clickable prototype a simplified isometric SVG carries the
  * same information (position, status colour, label) — see §8.
  */
-import type { ReactNode } from "react";
+import { Minus, Plus, RotateCcw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
+
+import { cn } from "@/lib/utils";
+
+const MIN_ZOOM = 0.7;
+const MAX_ZOOM = 3;
+
+type ViewTransform = { scale: number; x: number; y: number };
+
+export function ZoomableMap({ children, className }: { children: ReactNode; className?: string }) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const transformRef = useRef<ViewTransform>({ scale: 1, x: 0, y: 0 });
+  const dragRef = useRef<{ pointerId: number; x: number; y: number; originX: number; originY: number } | null>(null);
+  const [transform, setTransform] = useState<ViewTransform>(transformRef.current);
+  const [dragging, setDragging] = useState(false);
+
+  const commit = useCallback((next: ViewTransform) => {
+    transformRef.current = next;
+    setTransform(next);
+  }, []);
+
+  const zoomAt = useCallback((nextScale: number, px: number, py: number) => {
+    const current = transformRef.current;
+    const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nextScale));
+    const ratio = scale / current.scale;
+    commit({
+      scale,
+      x: px - (px - current.x) * ratio,
+      y: py - (py - current.y) * ratio,
+    });
+  }, [commit]);
+
+  const zoomFromCenter = (factor: number) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    zoomAt(transformRef.current.scale * factor, viewport.clientWidth / 2, viewport.clientHeight / 2);
+  };
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 100 : 1);
+      zoomAt(
+        transformRef.current.scale * Math.exp(-delta * 0.0015),
+        event.clientX - rect.left,
+        event.clientY - rect.top,
+      );
+    };
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    return () => viewport.removeEventListener("wheel", handleWheel);
+  }, [zoomAt]);
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    dragRef.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      originX: transformRef.current.x,
+      originY: transformRef.current.y,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    commit({
+      ...transformRef.current,
+      x: drag.originX + event.clientX - drag.x,
+      y: drag.originY + event.clientY - drag.y,
+    });
+  };
+
+  const endDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (dragRef.current?.pointerId !== event.pointerId) return;
+    dragRef.current = null;
+    setDragging(false);
+    event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+
+  return (
+    <div
+      ref={viewportRef}
+      className={cn("relative h-full min-h-[380px] w-full touch-none overflow-hidden", className)}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+    >
+      <div
+        className={cn(
+          "absolute inset-0 h-full w-full origin-top-left",
+          dragging ? "cursor-grabbing" : "cursor-grab transition-transform duration-200 ease-in-out",
+        )}
+        style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})` }}
+      >
+        {children}
+      </div>
+      <div className="absolute bottom-3 right-3 z-10 flex flex-col overflow-hidden rounded-md border border-border bg-surface shadow-md">
+        <button
+          type="button"
+          aria-label="Zoom in"
+          title="Zoom in"
+          className="grid size-9 place-items-center text-foreground transition-colors hover:bg-muted"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={() => zoomFromCenter(1.2)}
+        >
+          <Plus className="size-4" />
+        </button>
+        <button
+          type="button"
+          aria-label="Reset map view"
+          title="Reset map view"
+          className="grid size-9 place-items-center border-y border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={() => commit({ scale: 1, x: 0, y: 0 })}
+        >
+          <RotateCcw className="size-3.5" />
+        </button>
+        <button
+          type="button"
+          aria-label="Zoom out"
+          title="Zoom out"
+          className="grid size-9 place-items-center text-foreground transition-colors hover:bg-muted"
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={() => zoomFromCenter(1 / 1.2)}
+        >
+          <Minus className="size-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function iso(x: number, y: number, h: number, s: number) {
   return { x: (x - y) * s * 0.866, y: (x + y) * s * 0.5 - h };

@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoChip, IsoGround, IsoScene, ZoomableMap } from "@/components/oee/iso";
 import { Donut, MetricBar, PageHeader, Panel } from "@/components/oee/ui";
 import { TIER_HEX, tierOf } from "@/lib/oee/config";
 import { GROUP, PLANTS } from "@/lib/oee/data";
@@ -72,7 +72,7 @@ function MultiPlantView() {
           bodyClassName="relative p-0"
         >
           <Compass />
-          <div className="h-full min-h-[420px] w-full">
+          <ZoomableMap className="min-h-[420px] flex-1">
             <IsoScene viewBox="-205 -115 400 340">
               <IsoGround cols={7} rows={7} s={34} />
               {PLANTS.map((p, i) => {
@@ -105,7 +105,7 @@ function MultiPlantView() {
                 );
               })}
             </IsoScene>
-          </div>
+          </ZoomableMap>
         </Panel>
       </main>
     </div>
