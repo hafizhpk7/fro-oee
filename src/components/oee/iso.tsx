@@ -394,13 +394,67 @@ export function IsoChip({
   );
 }
 
+export function IsoMetricCard({
+  x,
+  y,
+  s = 26,
+  h = 44,
+  title,
+  value,
+  availability,
+  performance,
+  quality,
+  color,
+  onClick,
+}: {
+  x: number;
+  y: number;
+  s?: number;
+  h?: number;
+  title: string;
+  value: number;
+  availability: number;
+  performance: number;
+  quality: number;
+  color: string;
+  onClick?: () => void;
+}) {
+  const p = iso(x, y, h, s);
+  const width = 102;
+  const height = 54;
+  return (
+    <g
+      transform={`translate(${p.x - width / 2}, ${p.y - height - 10})`}
+      pointerEvents={onClick ? "auto" : "none"}
+      onClick={onClick}
+      className={onClick ? "cursor-pointer" : undefined}
+    >
+      <line x1={width / 2} y1={height} x2={width / 2} y2={height + 14} stroke={color} strokeWidth={1} />
+      <circle cx={width / 2} cy={height + 15} r={2.2} fill={color} />
+      <rect width={width} height={height} rx={5} fill="var(--surface)" stroke="var(--border)" />
+      <rect width={3} height={height} rx={1.5} fill={color} />
+      <text x={10} y={13} className="fill-muted-foreground" style={{ fontSize: 7, fontWeight: 700 }}>{title}</text>
+      <text x={10} y={31} fill={color} style={{ fontSize: 15, fontWeight: 700 }}>{value.toFixed(1)}%</text>
+      <text x={61} y={14} className="fill-muted-foreground" style={{ fontSize: 6 }}>A</text>
+      <text x={70} y={14} className="fill-foreground" style={{ fontSize: 6 }}>{availability.toFixed(1)}</text>
+      <text x={61} y={26} className="fill-muted-foreground" style={{ fontSize: 6 }}>P</text>
+      <text x={70} y={26} className="fill-foreground" style={{ fontSize: 6 }}>{performance.toFixed(1)}</text>
+      <text x={61} y={38} className="fill-muted-foreground" style={{ fontSize: 6 }}>Q</text>
+      <text x={70} y={38} className="fill-foreground" style={{ fontSize: 6 }}>{quality.toFixed(1)}</text>
+      <rect x={61} y={45} width={30} height={2} rx={1} fill="var(--grid)" />
+      <rect x={61} y={45} width={30 * Math.min(value, 100) / 100} height={2} rx={1} fill={color} />
+    </g>
+  );
+}
+
 export function Compass() {
   return (
-    <div className="pointer-events-none absolute right-5 top-5 z-10 flex items-center gap-1 text-xs font-semibold text-muted-foreground">
-      <span>N</span>
-      <svg width="52" height="52" viewBox="0 0 52 52" className="rounded-full border border-border bg-surface/80">
-        <line x1="14" y1="16" x2="38" y2="34" stroke="var(--muted-foreground)" strokeWidth="1.4" />
-        <path d="M11 13 L22 16 L16 21 Z" fill="var(--status-down)" />
+    <div className="pointer-events-none absolute right-5 top-5 z-10 flex items-center gap-1 text-[9px] font-semibold text-muted-foreground">
+      <svg width="48" height="48" viewBox="0 0 52 52" className="rounded-full border border-border bg-surface/80 shadow-lg backdrop-blur">
+        <circle cx="26" cy="26" r="18" fill="none" stroke="var(--border)" strokeDasharray="2 3" />
+        <text x="26" y="10" textAnchor="middle" fill="var(--muted-foreground)" fontSize="7">N</text>
+        <line x1="17" y1="35" x2="35" y2="17" stroke="var(--muted-foreground)" strokeWidth="1.4" />
+        <path d="M38 14 L34 24 L29 19 Z" fill="var(--status-down)" />
       </svg>
     </div>
   );

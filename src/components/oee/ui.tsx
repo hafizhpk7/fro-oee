@@ -24,14 +24,14 @@ export function Panel({
   return (
     <section
       className={cn(
-        "flex h-full min-h-0 min-w-0 flex-col rounded-lg border border-border bg-surface shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
+        "flex h-full min-h-0 min-w-0 flex-col rounded-lg border border-border bg-surface shadow-sm",
         className,
       )}
     >
       {(title || action) && (
         <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-2.5">
           <div className="min-w-0">
-            {title && <h2 className="truncate text-sm font-semibold tracking-tight">{title}</h2>}
+            {title && <h2 className="truncate font-display text-sm font-semibold tracking-tight">{title}</h2>}
             {subtitle && (
               <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
             )}
@@ -227,7 +227,7 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-background/90 px-4 py-3 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border bg-background/90 px-5 py-3 backdrop-blur-xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -240,7 +240,7 @@ export function PageHeader({
                 ‹ Back to {back.label}
               </Link>
             )}
-            <h1 className="truncate text-lg font-semibold tracking-tight">{title}</h1>
+            <h1 className="truncate font-display text-lg font-semibold tracking-tight">{title}</h1>
           </div>
           <nav className="mt-0.5 flex flex-wrap items-center gap-1 text-[11px] text-muted-foreground">
             {crumbs.map((c, i) => (

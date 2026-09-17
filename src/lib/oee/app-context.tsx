@@ -36,7 +36,7 @@ const AppContext = (globalStore.__oeeAppContext ??= createContext<Ctx | null>(nu
 export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>("shift-leader");
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [filters, setFiltersState] = useState<Filters>({
     span: "this-week",
     resolution: "1d",

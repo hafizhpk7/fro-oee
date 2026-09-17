@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoChip, IsoGround, IsoMachine, IsoPlot, IsoScene, ZoomableMap, iso } from "@/components/oee/iso";
+import { Compass, IsoGround, IsoMachine, IsoMetricCard, IsoPlot, IsoScene, ZoomableMap, iso } from "@/components/oee/iso";
 import {
   Delta,
   EmptyState,
@@ -38,6 +38,12 @@ export const Route = createFileRoute("/live/$plantId/$zoneId/")({
 const S = 40;
 const GAP_X = 1.7;
 const GAP_Y = 1.8;
+const FEATURED_LINES: Record<number, string> = {
+  0: "PCP02 Kemas",
+  4: "BLP33 Kemas",
+  8: "BLP11 Kemas",
+  12: "TUP13 Kemas",
+};
 
 function ZoneView() {
   const { plantId, zoneId } = useParams({ from: "/live/$plantId/$zoneId/" });
@@ -74,7 +80,7 @@ function ZoneView() {
       : [{ label: "Kemas", to: "/" }, { label: `${zone.name} · Shift 1` }];
 
   return (
-    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
+    <div className="live-tower flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={zone.name}
         crumbs={crumbs}
@@ -86,7 +92,7 @@ function ZoneView() {
           : {})}
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="live-kpi-strip grid gap-2 rounded-lg sm:grid-cols-3 lg:grid-cols-5">
           <KpiCard
             label="Zone OEE"
             value={zone.oee.toFixed(1)}
@@ -122,13 +128,14 @@ function ZoneView() {
         </div>
 
         <Panel
-          className="flex-1"
+          className="live-map-panel flex-1 overflow-hidden"
           title="Production Floor Map"
           subtitle={`${zone.lines.length} lines · ${machineCount} machines · bays ${rows} × ${cols} (${rows * cols - zone.lines.length} spare)`}
           action={<StatusLegend />}
           bodyClassName="relative p-0"
         >
           <Compass />
+          <div className="live-map-grid absolute inset-0 opacity-40" />
           <ZoomableMap className="min-h-[440px] flex-1">
             <IsoScene viewBox="-255 10 510 280">
               <IsoGround cols={cols * GAP_X + 0.5} rows={rows * GAP_Y + 0.5} s={S} />
@@ -153,20 +160,24 @@ function ZoneView() {
                         y={by + Math.floor(mi / 2) * 0.72}
                         s={S}
                         statusColor={STATUS_HEX[m.status]}
-                        onClick={() => setSelected(l)}
+                        onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
                       />
                     ))}
-                    <IsoChip
-                      x={bx + 0.6}
-                      y={by + 0.3}
-                      s={S}
-                      h={isSel ? 58 : 48}
-                      label={l.id}
-                      value={`${l.oee.toFixed(0)}%`}
-                      color={STATUS_HEX[l.status]}
-                      filled
-                      onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
-                    />
+                    {FEATURED_LINES[i] && (
+                      <IsoMetricCard
+                        x={bx + 0.6}
+                        y={by + 0.3}
+                        s={S}
+                        h={isSel ? 74 : 64}
+                        title={FEATURED_LINES[i]}
+                        value={l.oee}
+                        availability={l.availability}
+                        performance={l.performance}
+                        quality={l.quality}
+                        color={STATUS_HEX[l.status]}
+                        onClick={() => navigate({ to: "/live/$plantId/$zoneId/$lineId", params: { plantId, zoneId, lineId: l.id } })}
+                      />
+                    )}
                   </g>
                 );
               })}

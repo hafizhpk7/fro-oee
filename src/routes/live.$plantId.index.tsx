@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Compass, IsoBlock, IsoChip, IsoGround, IsoPlot, IsoScene, ZoomableMap } from "@/components/oee/iso";
+import { Compass, IsoBlock, IsoGround, IsoMetricCard, IsoPlot, IsoScene, ZoomableMap } from "@/components/oee/iso";
 import {
   Donut,
   EmptyState,
@@ -63,7 +63,7 @@ function PlantView() {
   const occurring = alarms.filter((a) => a.status === "OCCURRING").length;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
+    <div className="live-tower flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={`${plant.name} — Plant View`}
         // "Blok" has no definition in any document (§7 point 2): static breadcrumb text only.
@@ -77,7 +77,7 @@ function PlantView() {
         back={{ label: "Multi Plant", to: "/live" }}
       />
       <main className="flex flex-1 flex-col gap-3 p-4">
-        <div className="grid min-h-28 overflow-hidden rounded-lg border border-border bg-surface xl:grid-cols-[1.7fr_0.8fr]">
+        <div className="live-kpi-strip grid min-h-28 overflow-hidden rounded-lg border border-border bg-surface xl:grid-cols-[1.7fr_0.8fr]">
           <div className="flex min-w-0 flex-wrap items-stretch">
           <div className="flex items-center gap-4 border-r border-border px-4 py-3">
             <Donut value={plant.id === "J2" ? 76.9 : plant.oee} size={88} label={`${plant.id} OEE`} decimals={1} />
@@ -130,8 +130,9 @@ function PlantView() {
           </div>
         </div>
 
-        <Panel className="flex-1" action={<StatusLegend />} bodyClassName="relative p-0">
+        <Panel className="live-map-panel flex-1 overflow-hidden" action={<StatusLegend />} bodyClassName="relative p-0">
             <Compass />
+            <div className="live-map-grid absolute inset-0 opacity-40" />
             <ZoomableMap className="min-h-[380px] flex-1">
               <IsoScene viewBox="-260 15 520 280">
                 <IsoGround cols={10.5} rows={8.5} s={34} />
@@ -164,14 +165,17 @@ function PlantView() {
                 {plant.zones.map((z, zi) => {
                   const label = ZONE_LABELS[zi] ?? ZONE_LABELS[0];
                   return (
-                  <IsoChip
+                  <IsoMetricCard
                     key={z.id}
                     x={label.x}
                     y={label.y}
                     s={34}
-                    h={40}
-                    label={z.name}
-                    value={`${z.oee.toFixed(0)}%`}
+                    h={58}
+                    title={z.name}
+                    value={(REFERENCE_ZONE_SUMMARIES[zi] ?? z).oee}
+                    availability={(REFERENCE_ZONE_SUMMARIES[zi] ?? z).availability}
+                    performance={(REFERENCE_ZONE_SUMMARIES[zi] ?? z).performance}
+                    quality={(REFERENCE_ZONE_SUMMARIES[zi] ?? z).quality}
                     color={TIER_HEX[zi === 1 ? "good" : "warn"]}
                     onClick={() => navigate({ to: "/live/$plantId/$zoneId", params: { plantId: plant.id, zoneId: z.id } })}
                   />
