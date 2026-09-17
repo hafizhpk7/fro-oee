@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LiveIndexRouteImport } from './routes/live.index'
+import { Route as LivePlantIdIndexRouteImport } from './routes/live.$plantId.index'
+import { Route as LivePlantIdZoneIdIndexRouteImport } from './routes/live.$plantId.$zoneId.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +24,50 @@ const LiveIndexRoute = LiveIndexRouteImport.update({
   path: '/live/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LivePlantIdIndexRoute = LivePlantIdIndexRouteImport.update({
+  id: '/live/$plantId/',
+  path: '/live/$plantId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LivePlantIdZoneIdIndexRoute = LivePlantIdZoneIdIndexRouteImport.update({
+  id: '/live/$plantId/$zoneId/',
+  path: '/live/$plantId/$zoneId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/live/': typeof LiveIndexRoute
+  '/live/$plantId/': typeof LivePlantIdIndexRoute
+  '/live/$plantId/$zoneId/': typeof LivePlantIdZoneIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/live': typeof LiveIndexRoute
+  '/live/$plantId': typeof LivePlantIdIndexRoute
+  '/live/$plantId/$zoneId': typeof LivePlantIdZoneIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/live/': typeof LiveIndexRoute
+  '/live/$plantId/': typeof LivePlantIdIndexRoute
+  '/live/$plantId/$zoneId/': typeof LivePlantIdZoneIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/live/'
+  fullPaths: '/' | '/live/' | '/live/$plantId/' | '/live/$plantId/$zoneId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/live'
-  id: '__root__' | '/' | '/live/'
+  to: '/' | '/live' | '/live/$plantId' | '/live/$plantId/$zoneId'
+  id:
+    '__root__' | '/' | '/live/' | '/live/$plantId/' | '/live/$plantId/$zoneId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LiveIndexRoute: typeof LiveIndexRoute
+  LivePlantIdIndexRoute: typeof LivePlantIdIndexRoute
+  LivePlantIdZoneIdIndexRoute: typeof LivePlantIdZoneIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +86,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/live/$plantId/': {
+      id: '/live/$plantId/'
+      path: '/live/$plantId'
+      fullPath: '/live/$plantId/'
+      preLoaderRoute: typeof LivePlantIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/live/$plantId/$zoneId/': {
+      id: '/live/$plantId/$zoneId/'
+      path: '/live/$plantId/$zoneId'
+      fullPath: '/live/$plantId/$zoneId/'
+      preLoaderRoute: typeof LivePlantIdZoneIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LiveIndexRoute: LiveIndexRoute,
+  LivePlantIdIndexRoute: LivePlantIdIndexRoute,
+  LivePlantIdZoneIdIndexRoute: LivePlantIdZoneIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
