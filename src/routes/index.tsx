@@ -104,7 +104,7 @@ function Home() {
         </div>
 
         <p className="text-[11px] text-muted-foreground">
-          Read-only prototype with mock data. Use the role switcher in the header to demo Shift Leader
+          Read-only prototype with mock data. Use the role switcher in the sidebar to demo Shift Leader
           vs Section Head.
         </p>
       </main>

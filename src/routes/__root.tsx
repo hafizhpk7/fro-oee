@@ -10,7 +10,9 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { AppProvider } from "@/lib/oee/app-context";
+import { AppSidebar } from "@/components/oee/app-sidebar";
+import { AppProvider, useApp } from "@/lib/oee/app-context";
+import { cn } from "@/lib/utils";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -123,9 +125,27 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <DashboardShell />
       </AppProvider>
     </QueryClientProvider>
+  );
+}
+
+function DashboardShell() {
+  const { isCollapsed } = useApp();
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <AppSidebar />
+      <div
+        className={cn(
+          "min-h-screen transition-[margin] duration-300",
+          isCollapsed ? "ml-20" : "ml-64",
+        )}
+      >
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </div>
+    </div>
   );
 }

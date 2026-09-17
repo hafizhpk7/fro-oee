@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { DEFAULT_PLANT_ID } from "./data";
 import { snapResolution, type ResolutionId, type SpanId } from "./filters";
@@ -18,6 +18,10 @@ export type Filters = {
 type Ctx = {
   role: Role;
   setRole: (r: Role) => void;
+  isCollapsed: boolean;
+  setIsCollapsed: (collapsed: boolean) => void;
+  isDarkMode: boolean;
+  setIsDarkMode: (dark: boolean) => void;
   filters: Filters;
   /** Applies the cascading rules from §5 automatically. */
   setFilters: (patch: Partial<Filters>) => void;
@@ -27,6 +31,8 @@ const AppContext = createContext<Ctx | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>("shift-leader");
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [filters, setFiltersState] = useState<Filters>({
     span: "this-week",
     resolution: "1d",
@@ -54,7 +60,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const value = useMemo(() => ({ role, setRole, filters, setFilters }), [role, filters, setFilters]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
+
+  const value = useMemo(
+    () => ({
+      role,
+      setRole,
+      isCollapsed,
+      setIsCollapsed,
+      isDarkMode,
+      setIsDarkMode,
+      filters,
+      setFilters,
+    }),
+    [role, isCollapsed, isDarkMode, filters, setFilters],
+  );
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
