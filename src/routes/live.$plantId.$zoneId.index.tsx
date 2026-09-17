@@ -74,7 +74,7 @@ function ZoneView() {
       : [{ label: "Kemas", to: "/" }, { label: `${zone.name} · Shift 1` }];
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={zone.name}
         crumbs={crumbs}
@@ -85,7 +85,7 @@ function ZoneView() {
           ? { back: { label: "Plant View", to: "/live/$plantId", params: { plantId } } }
           : {})}
       />
-      <main className="space-y-3 p-4">
+      <main className="flex flex-1 flex-col gap-3 p-4">
         <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
           <KpiCard
             label="Zone OEE"
@@ -122,12 +122,13 @@ function ZoneView() {
         </div>
 
         <Panel
+          className="flex-1"
           title="Production Floor Map"
           subtitle={`${zone.lines.length} lines · ${machineCount} machines · bays ${rows} × ${cols} (${rows * cols - zone.lines.length} spare)`}
           action={<StatusLegend />}
           bodyClassName="relative p-0"
         >
-          <div className="h-[440px] w-full">
+          <div className="h-full min-h-[440px] w-full">
             <IsoScene viewBox="-185 -95 470 360">
               <IsoGround cols={cols * GAP_X + 0.5} rows={rows * GAP_Y + 0.5} s={S} />
               {zone.lines.map((l, i) => {

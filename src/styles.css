@@ -68,6 +68,12 @@
   --color-status-idle: var(--status-idle);
   --color-surface: var(--surface);
   --color-grid: var(--grid);
+  --color-loss-milestone: var(--loss-milestone);
+  --color-loss-effective: var(--loss-effective);
+  --color-loss-effective-foreground: var(--loss-effective-foreground);
+  --color-loss-caret: var(--loss-caret);
+  --color-loss-badge: var(--loss-badge);
+  --color-loss-badge-foreground: var(--loss-badge-foreground);
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
@@ -124,6 +130,23 @@
   --status-slow: oklch(0.75 0.16 68);
   --status-down: oklch(0.6 0.21 25);
   --status-idle: oklch(0.72 0.012 250);
+  --loss-milestone: oklch(0.93 0.012 255);
+  --loss-loading: oklch(0.74 0.02 255);
+  --loss-availability: oklch(0.61 0.2 27);
+  --loss-performance: oklch(0.75 0.17 72);
+  --loss-quality: oklch(0.61 0.22 295);
+  --loss-effective: oklch(0.91 0.08 155);
+  --loss-effective-foreground: oklch(0.45 0.14 150);
+  --loss-breakdown: oklch(0.54 0.19 27);
+  --loss-minor-stop: oklch(0.75 0.18 66);
+  --loss-setup: oklch(0.7 0.13 22);
+  --loss-speed: oklch(0.84 0.13 90);
+  --loss-reject: oklch(0.61 0.22 295);
+  --loss-rework: oklch(0.77 0.12 295);
+  --loss-planned: oklch(0.75 0.025 255);
+  --loss-caret: oklch(0.57 0.2 27);
+  --loss-badge: oklch(0.93 0.05 252);
+  --loss-badge-foreground: oklch(0.5 0.19 255);
 }
 
 .dark {
@@ -169,6 +192,23 @@
   --status-slow: oklch(0.79 0.15 68);
   --status-down: oklch(0.66 0.2 25);
   --status-idle: oklch(0.45 0.02 260);
+  --loss-milestone: oklch(0.3 0.025 260);
+  --loss-loading: oklch(0.55 0.025 255);
+  --loss-availability: oklch(0.66 0.2 27);
+  --loss-performance: oklch(0.79 0.16 72);
+  --loss-quality: oklch(0.7 0.2 295);
+  --loss-effective: oklch(0.34 0.09 155);
+  --loss-effective-foreground: oklch(0.76 0.14 155);
+  --loss-breakdown: oklch(0.66 0.19 27);
+  --loss-minor-stop: oklch(0.79 0.18 66);
+  --loss-setup: oklch(0.72 0.13 22);
+  --loss-speed: oklch(0.82 0.13 90);
+  --loss-reject: oklch(0.7 0.2 295);
+  --loss-rework: oklch(0.76 0.12 295);
+  --loss-planned: oklch(0.58 0.025 255);
+  --loss-caret: oklch(0.7 0.18 27);
+  --loss-badge: oklch(0.3 0.08 252);
+  --loss-badge-foreground: oklch(0.75 0.14 255);
 }
 
 @layer base {
@@ -179,5 +219,6 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    min-width: 1024px;
   }
 }

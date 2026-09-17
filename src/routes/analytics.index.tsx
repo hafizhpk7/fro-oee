@@ -79,7 +79,7 @@ function AnalyticsPage() {
   const attained = Math.round((goodOutput / planOutput) * 1000) / 10;
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={title}
         crumbs={[{ label: "Kemas", to: "/" }, { label: title }]}
@@ -88,11 +88,11 @@ function AnalyticsPage() {
       <FilterBar />
 
       {!scope.hasData ? (
-        <main className="p-4">
+        <main className="flex-1 p-4">
           <NoDataForFilters />
         </main>
       ) : (
-        <main className="space-y-3 p-4">
+        <main className="flex flex-1 flex-col gap-3 p-4">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
             <div className="flex items-center justify-center rounded-lg border border-border bg-surface py-3">
               <Donut value={avg("oee")} size={96} label="Average OEE" />
@@ -130,12 +130,13 @@ function AnalyticsPage() {
             </KpiCard>
           </div>
 
-          <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
-            <Panel title="OEE Trend" subtitle="Dashed line = reference target 75%">
+          <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-[1.4fr_1fr]">
+            <Panel title="OEE Trend" subtitle="Dashed line = reference target 75%" bodyClassName="min-h-[250px]">
               <TrendChart data={trend} keys={Object.keys(trend[0] ?? {}).filter((k) => k !== "label")} reference={75} />
             </Panel>
 
             <Panel
+              className="h-full"
               title="OEE Comparison"
               subtitle="Read-only comparison of two periods"
               action={

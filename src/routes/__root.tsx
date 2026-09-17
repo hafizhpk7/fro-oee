@@ -135,11 +135,11 @@ function DashboardShell() {
   const { isCollapsed } = useApp();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen bg-background text-foreground">
       <AppSidebar />
       <div
         className={cn(
-          "min-h-screen transition-[margin] duration-300",
+          "flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300",
           isCollapsed ? "ml-20" : "ml-64",
         )}
       >

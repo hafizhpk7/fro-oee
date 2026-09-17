@@ -38,7 +38,7 @@ function LossTreePage() {
   const tree = useMemo(() => lossTree(scope.seed), [scope.seed]);
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title="Loss Anatomy"
         crumbs={[
@@ -50,19 +50,19 @@ function LossTreePage() {
       />
       <FilterBar />
       {!scope.hasData ? (
-        <main className="p-4">
+        <main className="flex-1 p-4">
           <NoDataForFilters />
         </main>
       ) : (
-        <main className="grid gap-3 p-4 lg:grid-cols-2">
-          <Panel title="OEE Waterfall" subtitle={scope.scopeLabel}>
+        <main className="grid flex-1 auto-rows-fr gap-3 p-4 lg:grid-cols-2">
+          <Panel title="OEE Waterfall" subtitle={scope.scopeLabel} bodyClassName="min-h-0 p-0">
             <Waterfall milestones={wf.milestones} losses={wf.losses} />
           </Panel>
 
           <Panel
             title="Loss Tree"
-            subtitle="Click a row to open its root cause pareto · expand for level 2 and 3"
             action={<MeasureToggle value={measure} onChange={setMeasure} />}
+            bodyClassName="min-h-0 overflow-auto p-3"
           >
             <LossTree
               nodes={tree}

@@ -48,7 +48,7 @@ function PlantView() {
   const occurring = alarms.filter((a) => a.status === "OCCURRING").length;
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <div className="flex min-h-screen flex-col bg-background font-sans text-foreground">
       <PageHeader
         title={`${plant.name} — Plant View`}
         // "Blok" has no definition in any document (§7 point 2): static breadcrumb text only.
@@ -61,7 +61,7 @@ function PlantView() {
         meta="Week 32 · 05-Aug 14:22"
         back={{ label: "Multi Plant", to: "/live" }}
       />
-      <main className="space-y-3 p-4">
+      <main className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-4">
           <div className="flex items-center gap-4 pr-4">
             <Donut value={plant.oee} size={92} label="Plant OEE" />
@@ -96,7 +96,7 @@ function PlantView() {
           </div>
         </div>
 
-        <div className="grid gap-3 lg:grid-cols-[1.6fr_1fr]">
+        <div className="grid flex-1 auto-rows-fr gap-3 lg:grid-cols-[1.6fr_1fr]">
           <Panel
             title="Zone map"
             subtitle="Click a zone to open Zone View"
@@ -104,7 +104,7 @@ function PlantView() {
             bodyClassName="relative p-0"
           >
             <Compass />
-            <div className="h-[380px] w-full">
+            <div className="h-full min-h-[380px] w-full">
               <IsoScene viewBox="-185 -105 365 305">
                 <IsoGround cols={6} rows={6} s={34} />
                 {plant.zones.map((z, zi) =>
@@ -152,7 +152,7 @@ function PlantView() {
             subtitle={`${occurring} occurring · ${alarms.length - occurring} resolved this shift`}
             bodyClassName="p-0"
           >
-            <div className="max-h-[380px] overflow-auto">
+            <div className="h-full min-h-[380px] overflow-auto">
               <table className="w-full text-[11px]">
                 <thead className="sticky top-0 bg-surface text-left text-muted-foreground">
                   <tr className="border-b border-border">
