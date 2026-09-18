@@ -25,9 +25,6 @@ type Ctx = {
   filters: Filters;
   /** Applies the cascading rules from §5 automatically. */
   setFilters: (patch: Partial<Filters>) => void;
-  /** In-memory alarm acknowledgements (prototype only — resets on reload). */
-  acks: Record<string, { by: string; at: string }>;
-  acknowledgeAlarm: (alarmId: string) => void;
 };
 
 // Keep a single context instance across hot-module reloads. Without this, a
@@ -67,24 +64,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const [acks, setAcks] = useState<Record<string, { by: string; at: string }>>({});
-  const acknowledgeAlarm = useCallback(
-    (alarmId: string) => {
-      setAcks((prev) =>
-        prev[alarmId]
-          ? prev
-          : {
-              ...prev,
-              [alarmId]: {
-                by: role === "section-head" ? "Section Head" : "Shift Leader",
-                at: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              },
-            },
-      );
-    },
-    [role],
-  );
-
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
@@ -99,10 +78,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setIsDarkMode,
       filters,
       setFilters,
-      acks,
-      acknowledgeAlarm,
     }),
-    [role, isCollapsed, isDarkMode, filters, setFilters, acks, acknowledgeAlarm],
+    [role, isCollapsed, isDarkMode, filters, setFilters],
   );
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
