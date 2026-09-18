@@ -573,6 +573,116 @@ export function comparison(scopeSeed: string, lines: Line[]) {
   };
 }
 
+/* -------------------------------------------------- shifts & pacing (MES) */
+
+/** 3×8h shift windows (hours of day). */
+export const SHIFT_WINDOWS = [
+  { id: 1, label: "Shift 1", start: 6, end: 14 },
+  { id: 2, label: "Shift 2", start: 14, end: 22 },
+  { id: 3, label: "Shift 3", start: 22, end: 30 }, // wraps past midnight
+] as const;
+
+export function currentShift(now = new Date()) {
+  const h = now.getHours() + now.getMinutes() / 60;
+  const win =
+    SHIFT_WINDOWS.find((w) => h >= w.start && h < w.end) ??
+    (SHIFT_WINDOWS[2] as (typeof SHIFT_WINDOWS)[number]);
+  const endHour = win.end % 24;
+  const end = new Date(now);
+  end.setHours(endHour, 0, 0, 0);
+  if (end <= now) end.setDate(end.getDate() + 1);
+  const endsInMinutes = Math.max(0, Math.round((end.getTime() - now.getTime()) / 60000));
+  const elapsedMinutes = Math.max(1, 480 - endsInMinutes);
+  return { id: win.id, label: win.label, endsInMinutes, elapsedMinutes };
+}
+
+/** Side-by-side current vs previous shift comparison (mocked, seeded). */
+export function shiftCompare(scopeSeed: string) {
+  const pair = (key: string) => {
+    const previous = rand(`${scopeSeed}-prev-${key}`, 55, 88, 1);
+    const current = rand(`${scopeSeed}-cur-${key}`, 55, 90, 1);
+    return { previous, current, delta: Math.round((current - previous) * 10) / 10 };
+  };
+  return {
+    oee: pair("oee"),
+    availability: pair("a"),
+    performance: pair("p"),
+    quality: pair("q"),
+  };
+}
+
+/** Live pacing: actual output vs expected-to-this-minute, plus shift-end projection. */
+export function pacing(line: Line) {
+  const shiftMinutes = 480;
+  const elapsedRatio = Math.min(1, line.runningMinutes / shiftMinutes);
+  const expectedNow = Math.round(line.outputTarget * elapsedRatio);
+  const projectedEnd =
+    elapsedRatio > 0.05 ? Math.round(line.outputActual / elapsedRatio) : line.outputActual;
+  const variancePct =
+    expectedNow > 0 ? Math.round(((line.outputActual - expectedNow) / expectedNow) * 1000) / 10 : 0;
+  const state = variancePct >= 2 ? "ahead" : variancePct <= -2 ? "behind" : "on-track";
+  return { expectedNow, projectedEnd, variancePct, state } as const;
+}
+
+const OPERATOR_REASONS = [
+  "Menunggu teknisi tiba di line",
+  "Sparepart bearing tidak ada di store",
+  "Operator ganti roll film terlambat",
+  "Kualitas film dari supplier jelek",
+  "Sensor kotor, sudah dibersihkan",
+  "Menunggu QA release material",
+  "Changeover tooling belum siap",
+  "Air pressure dari utility drop",
+] as const;
+
+/** Top downtime reasons since shift start, with operator-entered reason text. */
+export function topShiftLosses(scopeSeed: string, count = 3) {
+  const pool = [
+    "Breakdown",
+    "Minor Stop",
+    "Setup + Idle",
+    "Speed Loss",
+    "Reject",
+    "Rework",
+  ] as const;
+  return pool
+    .map((category, i) => {
+      const seed = `${scopeSeed}-toplevel-${category}-${i}`;
+      const tree = LOSS_TREE_SHAPE[category] ?? {};
+      const child = pick(seed + "c", Object.keys(tree));
+      return {
+        category: category === "Setup + Idle" ? "Setup" : category,
+        label: child,
+        minutes: rand(seed + "m", 8, 96, 0),
+        occurrences: rand(seed + "o", 1, 9, 0),
+        reason: pick(seed + "r", [...OPERATOR_REASONS]),
+      };
+    })
+    .sort((a, b) => b.minutes - a.minutes)
+    .slice(0, count);
+}
+
+/** Operator reason texts ranked by frequency for a loss node (Pareto / Loss Tree). */
+export function reasonRanking(nodeSeed: string, count = 5) {
+  return [...OPERATOR_REASONS]
+    .map((text, i) => ({
+      text,
+      occurrences: rand(`${nodeSeed}-rsn-${i}`, 1, 18, 0),
+    }))
+    .sort((a, b) => b.occurrences - a.occurrences)
+    .slice(0, count);
+}
+
+/** All alarms across the group, tagged with their plant (for banners / andon). */
+export function allAlarms(): (Alarm & { plantId: string })[] {
+  return PLANTS.flatMap((p) => plantAlarms(p).map((a) => ({ ...a, plantId: p.id })));
+}
+
+/** Escalation rule: critical, occurring, older than 15 minutes. */
+export function isEscalated(a: Alarm): boolean {
+  return a.status === "OCCURRING" && a.severity === "CRITICAL" && a.durationMinutes > 15;
+}
+
 /* ------------------------------------------ shift performance (§6, bonus) */
 
 export function shiftPerformance(plantId: string) {
