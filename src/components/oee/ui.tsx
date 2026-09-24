@@ -5,6 +5,7 @@ import { type ReactNode } from "react";
 import { STATUS_DOT, STATUS_LABEL, TIER_HEX, TIER_TEXT, tierOf, type Status } from "@/lib/oee/config";
 import { PERIODS, type PeriodId } from "@/lib/oee/filters";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function Panel({
   title,
@@ -108,6 +109,9 @@ export function KpiCard({
   caption,
   tone,
   children,
+  comparisonLabel,
+  isUpdating = false,
+  onClick,
 }: {
   label: string;
   value: string | number;
@@ -115,6 +119,9 @@ export function KpiCard({
   caption?: ReactNode;
   tone?: "good" | "warn" | "bad" | "neutral";
   children?: ReactNode;
+  comparisonLabel?: string;
+  isUpdating?: boolean;
+  onClick?: () => void;
 }) {
   const toneClass =
     tone === "good"
@@ -124,19 +131,43 @@ export function KpiCard({
         : tone === "bad"
           ? "text-tier-bad"
           : "text-foreground";
-  return (
-    <div className="flex min-w-0 flex-col justify-between gap-1 rounded-lg border border-border bg-surface px-3 py-2.5">
+  const content = (
+    <>
       <span className="text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </span>
       <div className="flex items-baseline gap-1">
-        <span className={cn("font-mono text-2xl font-semibold leading-none", toneClass)}>{value}</span>
+        <span
+          className={cn(
+            "rounded-sm font-mono text-2xl font-semibold leading-none transition-colors duration-300",
+            toneClass,
+            isUpdating && "bg-primary/15",
+          )}
+        >
+          {value}
+        </span>
         {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
       </div>
       {caption && <div className="truncate text-[11px] text-muted-foreground">{caption}</div>}
+      {comparisonLabel && <div className="text-[10px] text-muted-foreground">{comparisonLabel}</div>}
       {children}
-    </div>
+    </>
   );
+
+  if (onClick) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={onClick}
+        className="h-auto min-w-0 flex-col items-stretch justify-between gap-1 whitespace-normal rounded-lg border border-border bg-surface px-3 py-2.5 text-left shadow-none hover:bg-accent"
+      >
+        {content}
+      </Button>
+    );
+  }
+
+  return <div className="flex min-w-0 flex-col justify-between gap-1 rounded-lg border border-border bg-surface px-3 py-2.5">{content}</div>;
 }
 
 export function MetricBar({ label, value }: { label: string; value: number }) {

@@ -75,12 +75,15 @@ export function useLiveZoneState(
   base: Omit<LiveMetrics, "oee">,
   lines: Line[],
 ) {
+  const { availability: baseAvailability, performance: basePerformance, quality: baseQuality } = base;
   const baseMetrics = useMemo(
     () => ({
-      ...base,
-      oee: clampPercentage((base.availability * base.performance * base.quality) / 10_000),
+      availability: baseAvailability,
+      performance: basePerformance,
+      quality: baseQuality,
+      oee: clampPercentage((baseAvailability * basePerformance * baseQuality) / 10_000),
     }),
-    [base.availability, base.performance, base.quality],
+    [baseAvailability, basePerformance, baseQuality],
   );
   const [metrics, setMetrics] = useState(baseMetrics);
   const [previousMetrics, setPreviousMetrics] = useState(baseMetrics);
@@ -106,7 +109,10 @@ export function useLiveZoneState(
         const next = current + 1;
         setMetrics((currentMetrics) => {
           setPreviousMetrics(currentMetrics);
-          return metricsFrom(base, `${zoneId}-live-${next}`);
+          return metricsFrom(
+            { availability: baseAvailability, performance: basePerformance, quality: baseQuality },
+            `${zoneId}-live-${next}`,
+          );
         });
 
         if (lines.length > 0 && rand(`${zoneId}-status-roll-${next}`, 0, 1, 3) < 0.75) {
@@ -142,7 +148,7 @@ export function useLiveZoneState(
       window.clearInterval(timer);
       if (flashTimer) window.clearTimeout(flashTimer);
     };
-  }, [base, lines, period, zoneId]);
+  }, [baseAvailability, basePerformance, baseQuality, lines, period, zoneId]);
 
   return { metrics, previousMetrics, lineStatuses, machineStatuses, refreshCount, isUpdating };
 }
