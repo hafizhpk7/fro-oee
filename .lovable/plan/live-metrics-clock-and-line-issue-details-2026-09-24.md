@@ -1,9 +1,11 @@
 # Live metrics, clock, and line issue details
 
 ## Goal
+
 Make the Zone Live Monitor behave like a real-time control view while keeping non-live periods as stable snapshots.
 
 ## Changes
+
 - Add reusable live-display logic that:
   - shows the current local date and time in the header and updates it every second only when `Period = LIVE`;
   - refreshes a small, bounded fluctuation for OEE, Availability, Performance, and Quality every 30 seconds only in LIVE mode;
@@ -25,6 +27,7 @@ Make the Zone Live Monitor behave like a real-time control view while keeping no
 - Use deterministic mock issue details so the prototype remains stable across reloads and does not require any backend.
 
 ## Verification
+
 - Confirm the LIVE timestamp advances every second, while snapshot-period timestamp text remains static.
 - Confirm KPI values change only after a LIVE refresh and briefly flash without layout movement.
 - Confirm map status colors update on selected live refreshes and remain synchronized with the issue list.
@@ -33,6 +36,7 @@ Make the Zone Live Monitor behave like a real-time control view while keeping no
 - Check the Zone View at desktop and mobile widths and verify no browser errors.
 
 ## Technical details
+
 - Keep all timing lifecycle cleanup inside React effects to avoid duplicate intervals.
 - Clamp simulated percentages to valid bounds and derive OEE consistently from the three component metrics.
 - Keep transient live status overrides in presentation state so the deterministic source dataset remains unchanged.
