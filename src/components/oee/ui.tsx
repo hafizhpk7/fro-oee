@@ -4,6 +4,7 @@ import { type ReactNode } from "react";
 
 import { STATUS_DOT, STATUS_LABEL, TIER_HEX, TIER_TEXT, tierOf, type Status } from "@/lib/oee/config";
 import { PERIODS, type PeriodId } from "@/lib/oee/filters";
+import { useLiveClock } from "@/lib/oee/live-display";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -255,6 +256,9 @@ export function PageHeader({
   back?: { label: string; to: string; params?: Record<string, string> };
   children?: ReactNode;
 }) {
+  const liveTime = useLiveClock(period ?? "today");
+  const displayMeta = period === "live" ? liveTime : meta;
+
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/90 px-4 py-3 backdrop-blur">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -291,7 +295,7 @@ export function PageHeader({
           </nav>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {meta && <span className="font-mono text-[11px] text-muted-foreground">{meta}</span>}
+          {displayMeta && <span className="font-mono text-[11px] text-muted-foreground">{displayMeta}</span>}
           {children}
           {period && onPeriod && <PeriodDropdown value={period} onChange={onPeriod} />}
         </div>
