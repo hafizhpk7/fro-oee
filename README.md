@@ -39,5 +39,3 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Charts**: [Recharts](https://recharts.org/) & Lucide React Icons
 - **Visualisasi Peta**: Pure SVG Mathematical Isometric Projection
-# atau
-bun dev
